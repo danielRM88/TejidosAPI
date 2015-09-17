@@ -345,16 +345,40 @@ DROP FUNCTION IF EXISTS tejidos_dev.update_on_purchase_update();
 CREATE OR REPLACE FUNCTION tejidos_dev.update_on_purchase_update() RETURNS TRIGGER AS 
 $BODY$
     DECLARE
-        r       tejidos_dev.inventories%rowtype;
+        r                tejidos_dev.inventories%rowtype;
+        pexistence       integer;
+        aexistence       numeric(10,2);
+        pinventory       integer;
+        ainventory       numeric(10,2);
     BEGIN
         --
         -- Despues de un modificar una compra se actualiza existencia
+        -- No se puede modificar una compra sin antes remover los registros asociados en purchase_have_inventories
         --
         IF (NEW.purchase_state = 'CURRENT') THEN
           FOR r IN (SELECT * FROM tejidos_dev.inventories i WHERE i.purchase_id = NEW.id) LOOP
              INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit) VALUES (r.id, r.pieces, r.amount, r.unit);
           END LOOP;
         ELSIF (NEW.purchase_state = 'CANCEL') THEN
+          pexistence = (SELECT SUM(e.pieces) FROM tejidos_dev.existences e 
+                                    INNER JOIN tejidos_dev.inventories i ON e.inventory_id = i.id
+                                    INNER JOIN tejidos_dev.purchases pu ON pu.id = i.purchase_id
+                                    WHERE (pu.id = NEW.id));
+          aexistence = (SELECT SUM(e.amount) FROM tejidos_dev.existences e 
+                                    INNER JOIN tejidos_dev.inventories i ON e.inventory_id = i.id
+                                    INNER JOIN tejidos_dev.purchases pu ON pu.id = i.purchase_id
+                                    WHERE (pu.id = NEW.id));
+
+          pinventory = (SELECT SUM(i.pieces) FROM tejidos_dev.inventories i
+                                    INNER JOIN tejidos_dev.purchases pu ON pu.id = i.purchase_id
+                                    WHERE (pu.id = NEW.id));
+          ainventory = (SELECT SUM(i.amount) FROM tejidos_dev.inventories i
+                                    INNER JOIN tejidos_dev.purchases pu ON pu.id = i.purchase_id
+                                    WHERE (pu.id = NEW.id));
+
+          IF (pinventory > pexistence OR ainventory > aexistence) THEN
+            RAISE EXCEPTION 'not enough in existence to cancel purchase (If fabrics have been sold cancel the sales first OR check that the purchase has not already been cancelled)';
+          END IF;
           FOR r IN (SELECT * FROM tejidos_dev.inventories i WHERE i.purchase_id = NEW.id) LOOP
              DELETE FROM tejidos_dev.existences e WHERE e.inventory_id = r.id;
           END LOOP;
@@ -366,6 +390,66 @@ $BODY$
 LANGUAGE plpgsql;
 
 CREATE TRIGGER update_on_purchase_update AFTER UPDATE ON tejidos_dev.purchases FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_purchase_update();
+/* ############################################################################################## */
+
+
+/* ############################################################################################## */
+DROP TRIGGER IF EXISTS update_on_purchase_delete ON tejidos_dev.purchases;
+DROP FUNCTION IF EXISTS tejidos_dev.update_on_purchase_delete();
+
+CREATE OR REPLACE FUNCTION tejidos_dev.update_on_purchase_delete() RETURNS TRIGGER AS 
+$BODY$
+    DECLARE
+        r                tejidos_dev.inventories%rowtype;
+        sales            integer;
+        pexistence       integer;
+        aexistence       numeric(10,2);
+        pinventory       integer;
+        ainventory       numeric(10,2);
+    BEGIN
+        sales = (SELECT COUNT(*) FROM tejidos_dev.sales_have_inventories si
+                                 INNER JOIN tejidos_dev.inventories i ON si.inventory_id = i.id
+                                 INNER JOIN tejidos_dev.purchases p ON p.id = i.purchase_id
+                                 WHERE p.id = OLD.id);
+        
+        IF (sales > 0) THEN
+            RAISE EXCEPTION 'fabrics have been sold (delete sales first)';
+        END IF;
+
+        IF (OLD.purchase_state = 'CURRENT') THEN
+          pexistence = (SELECT SUM(e.pieces) FROM tejidos_dev.existences e 
+                                    INNER JOIN tejidos_dev.inventories i ON e.inventory_id = i.id
+                                    INNER JOIN tejidos_dev.purchases pu ON pu.id = i.purchase_id
+                                    WHERE (pu.id = OLD.id));
+          aexistence = (SELECT SUM(e.amount) FROM tejidos_dev.existences e 
+                                    INNER JOIN tejidos_dev.inventories i ON e.inventory_id = i.id
+                                    INNER JOIN tejidos_dev.purchases pu ON pu.id = i.purchase_id
+                                    WHERE (pu.id = OLD.id));
+
+          pinventory = (SELECT SUM(i.pieces) FROM tejidos_dev.inventories i
+                                    INNER JOIN tejidos_dev.purchases pu ON pu.id = i.purchase_id
+                                    WHERE (pu.id = OLD.id));
+          ainventory = (SELECT SUM(i.amount) FROM tejidos_dev.inventories i
+                                    INNER JOIN tejidos_dev.purchases pu ON pu.id = i.purchase_id
+                                    WHERE (pu.id = OLD.id));
+
+          IF (pinventory > pexistence OR ainventory > aexistence) THEN
+            RAISE EXCEPTION 'not enough in existence to delete purchase (there may be some data inconsistency)';
+          END IF;
+        END IF;
+
+        FOR r IN (SELECT * FROM tejidos_dev.inventories i WHERE i.purchase_id = OLD.id) LOOP
+           DELETE FROM tejidos_dev.existences e WHERE e.inventory_id = r.id;
+        END LOOP;
+
+        DELETE FROM tejidos_dev.inventories i WHERE i.purchase_id = OLD.id;
+    
+        RETURN OLD;
+    END;
+$BODY$ 
+LANGUAGE plpgsql;
+
+CREATE TRIGGER update_on_purchase_delete BEFORE DELETE ON tejidos_dev.purchases FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_purchase_delete();
 /* ############################################################################################## */
 
 
@@ -407,10 +491,10 @@ CREATE TRIGGER update_on_sales_insert AFTER INSERT ON tejidos_dev.sales_have_inv
 
 
 /* ############################################################################################## */
-DROP TRIGGER IF EXISTS update_on_sales_cancel ON tejidos_dev.sales;
-DROP FUNCTION IF EXISTS tejidos_dev.update_on_sales_cancel();
+DROP TRIGGER IF EXISTS update_on_sales_update ON tejidos_dev.sales;
+DROP FUNCTION IF EXISTS tejidos_dev.update_on_sales_update();
 
-CREATE OR REPLACE FUNCTION tejidos_dev.update_on_sales_cancel()
+CREATE OR REPLACE FUNCTION tejidos_dev.update_on_sales_update()
   RETURNS trigger AS
 $BODY$
     DECLARE
@@ -435,10 +519,10 @@ $BODY$
         FOR r IN (SELECT * FROM tejidos_dev.sales_have_inventories s WHERE s.sale_id = NEW.id) LOOP
           p = (SELECT e.pieces FROM tejidos_dev.existences e WHERE e.inventory_id = r.inventory_id);
           a = (SELECT e.amount FROM tejidos_dev.existences e WHERE e.inventory_id = r.inventory_id);
-          IF (a - r.amount) < 0 THEN RAISE EXCEPTION 'not enough amount in existence'; END IF;
-          IF (p - r.pieces) < 0 THEN RAISE EXCEPTION 'not enough pieces in existence'; END IF;
+          IF (a IS NULL OR (a - r.amount) < 0) THEN RAISE EXCEPTION 'not enough amount in existence'; END IF;
+          IF (p IS NULL OR (p - r.pieces) < 0) THEN RAISE EXCEPTION 'not enough pieces in existence'; END IF;
           IF (((a - r.amount) = 0 AND (p - r.pieces) != 0) OR ((a - r.amount) != 0 AND (p - r.pieces) = 0)) THEN 
-            RAISE EXCEPTION 'inconsistency between pieces and amount (one is zero the other is not)'; 
+            RAISE EXCEPTION 'inconsistency between pieces and amount (one is zero the other is not)';
           END IF;
           UPDATE tejidos_dev.existences SET 
             amount = (a - r.amount),
@@ -452,5 +536,42 @@ $BODY$
 $BODY$
   LANGUAGE plpgsql;
 
-CREATE TRIGGER update_on_sales_cancel AFTER UPDATE ON tejidos_dev.sales FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_sales_cancel();
+CREATE TRIGGER update_on_sales_update AFTER UPDATE ON tejidos_dev.sales FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_sales_update();
+/* ############################################################################################## 
+
+
+/* ############################################################################################## */
+DROP TRIGGER IF EXISTS update_on_sales_delete ON tejidos_dev.sales;
+DROP FUNCTION IF EXISTS tejidos_dev.update_on_sales_delete();
+
+CREATE OR REPLACE FUNCTION tejidos_dev.update_on_sales_delete()
+  RETURNS trigger AS
+$BODY$
+    DECLARE
+        r       tejidos_dev.sales_have_inventories%rowtype;
+        p       integer;
+        a       numeric(10,2);
+    BEGIN
+
+      FOR r IN (SELECT * FROM tejidos_dev.sales_have_inventories s WHERE s.sale_id = OLD.id) LOOP
+        a = (SELECT e.amount FROM tejidos_dev.existences e WHERE e.inventory_id = r.inventory_id);
+        p = (SELECT e.pieces FROM tejidos_dev.existences e WHERE e.inventory_id = r.inventory_id);
+        IF (a > 0) THEN 
+            UPDATE tejidos_dev.existences SET 
+                amount = (a + r.amount),
+                pieces = (p + r.pieces)
+            WHERE inventory_id = r.inventory_id;
+        ELSE
+            INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit) VALUES (r.inventory_id, r.pieces, r.amount, r.unit);
+        END IF;
+      END LOOP;
+
+      DELETE FROM tejidos_dev.sales_have_inventories si WHERE si.sale_id = OLD.id;
+
+      RETURN OLD;
+    END;
+$BODY$
+  LANGUAGE plpgsql;
+
+CREATE TRIGGER update_on_sales_delete BEFORE DELETE ON tejidos_dev.sales FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_sales_delete();
 /* ############################################################################################## 
