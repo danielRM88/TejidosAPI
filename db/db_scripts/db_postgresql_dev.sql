@@ -47,7 +47,8 @@ CREATE SCHEMA TEJIDOS_DEV;
 CREATE TABLE TEJIDOS_DEV.IVAS (
   ID SERIAL  NOT NULL ,
   PERCENTAGE NUMERIC(5,2)   NOT NULL ,
-  INSERT_DATE TIMESTAMP   NOT NULL   ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
 PRIMARY KEY(ID));
 
 CREATE UNIQUE INDEX IVAS_UNIQUE_PERCENTAGE ON TEJIDOS_DEV.IVAS (PERCENTAGE);
@@ -61,6 +62,8 @@ CREATE TABLE TEJIDOS_DEV.PHONES (
   COUNTRY_CODE VARCHAR(5)   NOT NULL ,
   AREA_CODE VARCHAR(5)   NOT NULL ,
   PHONE_NUMBER VARCHAR(15)   NOT NULL   ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
 PRIMARY KEY(ID));
 
 CREATE UNIQUE INDEX PHONES_UNIQUE_PHONE ON TEJIDOS_DEV.PHONES (COUNTRY_CODE, AREA_CODE, PHONE_NUMBER);
@@ -76,6 +79,8 @@ CREATE TABLE TEJIDOS_DEV.SUPPLIERS (
   NUMBER_ID VARCHAR(50)   NOT NULL ,
   ADDRESS VARCHAR(255)    ,
   EMAIL VARCHAR(25)      ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
   SUPPLIER_STATE VARCHAR(20)  DEFAULT 'CURRENT' NOT NULL   ,
 PRIMARY KEY(ID)  );
 
@@ -92,6 +97,8 @@ CREATE TABLE TEJIDOS_DEV.CLIENTS (
   NUMBER_ID VARCHAR(50)   NOT NULL ,
   ADDRESS VARCHAR(255)    ,
   EMAIL VARCHAR(25)      ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
   CLIENT_STATE VARCHAR(20)  DEFAULT 'CURRENT' NOT NULL   ,
 PRIMARY KEY(ID));
 
@@ -125,6 +132,8 @@ CREATE TABLE TEJIDOS_DEV.USERS (
   LAST_SIGN_IN_AT TIMESTAMP,
   CURRENT_SIGN_IN_IP INET,
   LAST_SIGN_IN_IP INET,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
 PRIMARY KEY(ID));
 
 CREATE UNIQUE INDEX USERS_UNIQUE_EMAIL ON TEJIDOS_DEV.USERS (EMAIL);
@@ -140,6 +149,8 @@ CREATE TABLE TEJIDOS_DEV.FABRICS (
   DESCRIPTION VARCHAR(255)    ,
   COLOR VARCHAR(50)    ,
   UNIT_PRICE NUMERIC(18,2)   NOT NULL ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
   FABRIC_STATE VARCHAR(20)  DEFAULT 'CURRENT' NOT NULL   ,
 PRIMARY KEY(ID));
 
@@ -152,6 +163,8 @@ CREATE UNIQUE INDEX FABRICS_UNIQUE_CODE ON TEJIDOS_DEV.FABRICS (CODE) WHERE FABR
 CREATE TABLE TEJIDOS_DEV.SUPPLIERS_HAVE_PHONES (
   SUPPLIER_ID INT   NOT NULL ,
   PHONE_ID INT   NOT NULL   ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
 PRIMARY KEY(SUPPLIER_ID, PHONE_ID)    ,
   FOREIGN KEY(SUPPLIER_ID)
     REFERENCES TEJIDOS_DEV.SUPPLIERS(ID),
@@ -173,6 +186,8 @@ CREATE TABLE TEJIDOS_DEV.PURCHASES (
   SUBTOTAL NUMERIC(18,2)   NOT NULL ,
   FORM_OF_PAYMENT VARCHAR(155)    ,
   PURCHASE_DATE DATE   NOT NULL   ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
   PURCHASE_STATE VARCHAR(20)  DEFAULT 'CURRENT' NOT NULL   ,
 PRIMARY KEY(ID)    ,
   FOREIGN KEY(IVA_ID)
@@ -191,6 +206,8 @@ CREATE UNIQUE INDEX PURCHASES_UNIQUE_NUMBER ON TEJIDOS_DEV.PURCHASES (SUPPLIER_I
 CREATE TABLE TEJIDOS_DEV.CLIENTS_HAVE_PHONES (
   CLIENT_ID INT   NOT NULL ,
   PHONE_ID INT   NOT NULL   ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
 PRIMARY KEY(CLIENT_ID, PHONE_ID)    ,
   FOREIGN KEY(CLIENT_ID)
     REFERENCES TEJIDOS_DEV.CLIENTS(ID),
@@ -233,6 +250,8 @@ CREATE TABLE TEJIDOS_DEV.SALES (
   SUBTOTAL NUMERIC(18,2)   NOT NULL ,
   SALE_DATE DATE   NOT NULL ,
   FORM_OF_PAYMENT VARCHAR(155)   NOT NULL ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
   SALE_STATE VARCHAR(20)  DEFAULT 'CURRENT' NOT NULL   ,
 PRIMARY KEY(ID)    ,
   FOREIGN KEY(IVA_ID)
@@ -256,6 +275,8 @@ CREATE TABLE TEJIDOS_DEV.INVENTORIES (
   AMOUNT NUMERIC(10,2)   NOT NULL ,
   UNIT VARCHAR(15)   NOT NULL ,
   UNIT_PRICE NUMERIC(18,2)   NOT NULL ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
 PRIMARY KEY(ID)    ,
   FOREIGN KEY(PURCHASE_ID)
     REFERENCES TEJIDOS_DEV.PURCHASES(ID),
@@ -274,6 +295,8 @@ CREATE TABLE TEJIDOS_DEV.EXISTENCES (
   PIECES INT NOT NULL,
   AMOUNT NUMERIC(10,2)   NOT NULL ,
   UNIT VARCHAR(15)   NOT NULL ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
 PRIMARY KEY(ID)    ,
   FOREIGN KEY(INVENTORY_ID)
     REFERENCES TEJIDOS_DEV.INVENTORIES(ID));
@@ -292,6 +315,8 @@ CREATE TABLE TEJIDOS_DEV.SALES_HAVE_INVENTORIES (
   AMOUNT NUMERIC(10,2)   NOT NULL ,
   UNIT VARCHAR(15)   NOT NULL ,
   UNIT_PRICE NUMERIC(18,2)   NOT NULL ,
+  CREATED_AT TIMESTAMP   NOT NULL   ,
+  UPDATED_AT TIMESTAMP   NOT NULL   ,
 PRIMARY KEY(ID)    ,
   FOREIGN KEY(SALE_ID)
     REFERENCES TEJIDOS_DEV.SALES(ID),
@@ -327,8 +352,8 @@ $BODY$
         -- Despues de un insert en inventories, se replica la sentencia en existences
         --
         IF (TG_OP = 'INSERT') THEN
-            INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit)
-            VALUES (NEW.id, NEW.pieces, NEW.amount, NEW.unit);
+            INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit, created_at, updated_at)
+            VALUES (NEW.id, NEW.pieces, NEW.amount, NEW.unit, current_timestamp, current_timestamp);
         END IF;
         RETURN NULL; -- result is ignored since this is an AFTER trigger
     END;
@@ -357,7 +382,7 @@ $BODY$
         --
         IF (NEW.purchase_state = 'CURRENT') THEN
           FOR r IN (SELECT * FROM tejidos_dev.inventories i WHERE i.purchase_id = NEW.id) LOOP
-             INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit) VALUES (r.id, r.pieces, r.amount, r.unit);
+             INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit, created_at, updated_at) VALUES (r.id, r.pieces, r.amount, r.unit, current_timestamp, current_timestamp);
           END LOOP;
         ELSIF (NEW.purchase_state = 'CANCEL') THEN
           pexistence = (SELECT SUM(e.pieces) FROM tejidos_dev.existences e 
@@ -512,7 +537,7 @@ $BODY$
                     pieces = (p + r.pieces)
                 WHERE inventory_id = r.inventory_id;
             ELSE
-                INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit) VALUES (r.inventory_id, r.pieces, r.amount, r.unit);
+                INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit, created_at, updated_at) VALUES (r.inventory_id, r.pieces, r.amount, r.unit, current_timestamp, current_timestamp);
             END IF;
         END LOOP;
       ELSIF (NEW.sale_state = 'CURRENT') THEN
@@ -562,7 +587,7 @@ $BODY$
                 pieces = (p + r.pieces)
             WHERE inventory_id = r.inventory_id;
         ELSE
-            INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit) VALUES (r.inventory_id, r.pieces, r.amount, r.unit);
+            INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit, created_at, updated_at) VALUES (r.inventory_id, r.pieces, r.amount, r.unit, current_timestamp, current_timestamp);
         END IF;
       END LOOP;
 
