@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  resources :invoices, except: [:new, :edit]
+  resources :users, except: [:new, :edit]
+  resources :existences, except: [:new, :edit]
+  resources :inventories, except: [:new, :edit]
+  resources :fabrics, except: [:new, :edit]
+  resources :suppliers, except: [:new, :edit]
+  resources :phones, except: [:new, :edit]
   resources :purchases, except: [:new, :edit]
   resources :ivas, except: [:new, :edit]
   resources :sales, except: [:new, :edit]

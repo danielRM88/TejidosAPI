@@ -1,22 +1,22 @@
 /* SCRIPTS DE INICIALIZACION
   CORRER COMO SUPERUSER */
 
-DROP TABLE TEJIDOS_DEV.SALES_HAVE_INVENTORIES;
+DROP TABLE TEJIDOS_DEV.SALES;
 
 DROP TABLE TEJIDOS_DEV.EXISTENCES;
 
 DROP TABLE TEJIDOS_DEV.INVENTORIES;
 
-DROP SEQUENCE TEJIDOS_DEV.SALES_NOI_NUMBER_SQ;
-DROP SEQUENCE TEJIDOS_DEV.SALES_NUMBER_SQ;
-DROP TABLE TEJIDOS_DEV.SALES;
+DROP SEQUENCE TEJIDOS_DEV.INVOICES_NOI_NUMBER_SQ;
+DROP SEQUENCE TEJIDOS_DEV.INVOICES_NUMBER_SQ;
+DROP TABLE TEJIDOS_DEV.INVOICES;
 
 
-DROP TABLE TEJIDOS_DEV.CLIENTS_HAVE_PHONES;
+DROP TABLE TEJIDOS_DEV.CLIENTS_PHONES;
 
 DROP TABLE TEJIDOS_DEV.PURCHASES;
 
-DROP TABLE TEJIDOS_DEV.SUPPLIERS_HAVE_PHONES;
+DROP TABLE TEJIDOS_DEV.PHONES_SUPPLIERS;
 
 DROP TABLE TEJIDOS_DEV.FABRICS;
 
@@ -160,7 +160,7 @@ CREATE UNIQUE INDEX FABRICS_UNIQUE_CODE ON TEJIDOS_DEV.FABRICS (CODE) WHERE FABR
 
 
 /* ############################################################################################## */
-CREATE TABLE TEJIDOS_DEV.SUPPLIERS_HAVE_PHONES (
+CREATE TABLE TEJIDOS_DEV.PHONES_SUPPLIERS (
   SUPPLIER_ID INT   NOT NULL ,
   PHONE_ID INT   NOT NULL   ,
   CREATED_AT TIMESTAMP   NOT NULL   ,
@@ -171,8 +171,8 @@ PRIMARY KEY(SUPPLIER_ID, PHONE_ID)    ,
   FOREIGN KEY(PHONE_ID)
     REFERENCES TEJIDOS_DEV.PHONES(ID));
 
-CREATE INDEX SUPP_HAVE_PHONES_SUPPLIERS_FK ON TEJIDOS_DEV.SUPPLIERS_HAVE_PHONES (SUPPLIER_ID);
-CREATE INDEX SUPP_HAVE_PHONES_PHONES_FK ON TEJIDOS_DEV.SUPPLIERS_HAVE_PHONES (PHONE_ID);
+CREATE INDEX SUPPLIERS_PHONES_SUPPLIERS_FK ON TEJIDOS_DEV.PHONES_SUPPLIERS (SUPPLIER_ID);
+CREATE INDEX SUPPLIERS_PHONES_PHONES_FK ON TEJIDOS_DEV.PHONES_SUPPLIERS (PHONE_ID);
 /* ############################################################################################## */
 
 
@@ -203,7 +203,7 @@ CREATE UNIQUE INDEX PURCHASES_UNIQUE_NUMBER ON TEJIDOS_DEV.PURCHASES (SUPPLIER_I
 
 
 /* ############################################################################################## */
-CREATE TABLE TEJIDOS_DEV.CLIENTS_HAVE_PHONES (
+CREATE TABLE TEJIDOS_DEV.CLIENTS_PHONES (
   CLIENT_ID INT   NOT NULL ,
   PHONE_ID INT   NOT NULL   ,
   CREATED_AT TIMESTAMP   NOT NULL   ,
@@ -214,54 +214,54 @@ PRIMARY KEY(CLIENT_ID, PHONE_ID)    ,
   FOREIGN KEY(PHONE_ID)
     REFERENCES TEJIDOS_DEV.PHONES(ID));
 
-CREATE INDEX CLIENTS_HAVE_PHONES_CLIENTS_FK ON TEJIDOS_DEV.CLIENTS_HAVE_PHONES (CLIENT_ID);
-CREATE INDEX CLIENTS_HAVE_PHONES_PHONES_FK ON TEJIDOS_DEV.CLIENTS_HAVE_PHONES (PHONE_ID);
+CREATE INDEX CLIENTS_PHONES_CLIENTS_FK ON TEJIDOS_DEV.CLIENTS_PHONES (CLIENT_ID);
+CREATE INDEX CLIENTS_PHONES_PHONES_FK ON TEJIDOS_DEV.CLIENTS_PHONES (PHONE_ID);
 /* ############################################################################################## */
 
 
 
 /* ############################################################################################## */
 
--- Sequence: TEJIDOS_DEV.SALES_NUMBER_SQ
-CREATE SEQUENCE TEJIDOS_DEV.SALES_NUMBER_SQ
+-- Sequence: TEJIDOS_DEV.INVOICES_NUMBER_SQ
+CREATE SEQUENCE TEJIDOS_DEV.INVOICES_NUMBER_SQ
   INCREMENT 1
   MINVALUE 1
   MAXVALUE 9223372036854775807
   START 1
   CACHE 1;
-ALTER TABLE TEJIDOS_DEV.SALES_NUMBER_SQ
+ALTER TABLE TEJIDOS_DEV.INVOICES_NUMBER_SQ
   OWNER TO postgres;
 
--- Sequence: TEJIDOS_DEV.SALES_NOI_NUMBER_SQ
-CREATE SEQUENCE TEJIDOS_DEV.SALES_NOI_NUMBER_SQ
+-- Sequence: TEJIDOS_DEV.INVOICES_NOI_NUMBER_SQ
+CREATE SEQUENCE TEJIDOS_DEV.INVOICES_NOI_NUMBER_SQ
   INCREMENT 1
   MINVALUE 1
   MAXVALUE 9223372036854775807
   START 1
   CACHE 1;
-ALTER TABLE TEJIDOS_DEV.SALES_NOI_NUMBER_SQ
+ALTER TABLE TEJIDOS_DEV.INVOICES_NOI_NUMBER_SQ
   OWNER TO postgres;
 
-CREATE TABLE TEJIDOS_DEV.SALES (
+CREATE TABLE TEJIDOS_DEV.INVOICES (
   ID SERIAL  NOT NULL ,
   CLIENT_ID INT   NOT NULL ,
   IVA_ID INT   NOT NULL ,
-  SALE_NUMBER VARCHAR(50)   NOT NULL,
+  INVOICE_NUMBER VARCHAR(50)   NOT NULL,
   SUBTOTAL NUMERIC(18,2)   NOT NULL ,
-  SALE_DATE DATE   NOT NULL ,
+  INVOICE_DATE DATE   NOT NULL ,
   FORM_OF_PAYMENT VARCHAR(155)   NOT NULL ,
   CREATED_AT TIMESTAMP   NOT NULL   ,
   UPDATED_AT TIMESTAMP   NOT NULL   ,
-  SALE_STATE VARCHAR(20)  DEFAULT 'CURRENT' NOT NULL   ,
+  INVOICE_STATE VARCHAR(20)  DEFAULT 'CURRENT' NOT NULL   ,
 PRIMARY KEY(ID)    ,
   FOREIGN KEY(IVA_ID)
     REFERENCES TEJIDOS_DEV.IVAS(ID),
   FOREIGN KEY(CLIENT_ID)
     REFERENCES TEJIDOS_DEV.CLIENTS(ID));
 
-CREATE INDEX SALES_IVAS_FK ON TEJIDOS_DEV.SALES (IVA_ID);
-CREATE INDEX SALES_CLIENTS_FK ON TEJIDOS_DEV.SALES (CLIENT_ID);
-CREATE UNIQUE INDEX SALES_UNIQUE_NUMBER ON TEJIDOS_DEV.SALES(SALE_NUMBER);
+CREATE INDEX INVOICES_IVAS_FK ON TEJIDOS_DEV.INVOICES (IVA_ID);
+CREATE INDEX INVOICES_CLIENTS_FK ON TEJIDOS_DEV.INVOICES (CLIENT_ID);
+CREATE UNIQUE INDEX INVOICES_UNIQUE_NUMBER ON TEJIDOS_DEV.INVOICES(INVOICE_NUMBER);
 /* ############################################################################################## */
 
 
@@ -307,9 +307,9 @@ CREATE UNIQUE INDEX EXISTENCES_UNIQUE_INV ON TEJIDOS_DEV.EXISTENCES (INVENTORY_I
 
 
 /* ############################################################################################## */
-CREATE TABLE TEJIDOS_DEV.SALES_HAVE_INVENTORIES (
+CREATE TABLE TEJIDOS_DEV.SALES (
   ID SERIAL  NOT NULL ,
-  SALE_ID INT   NOT NULL ,
+  INVOICE_ID INT   NOT NULL ,
   INVENTORY_ID INT   NOT NULL ,
   PIECES INT NOT NULL,
   AMOUNT NUMERIC(10,2)   NOT NULL ,
@@ -318,13 +318,13 @@ CREATE TABLE TEJIDOS_DEV.SALES_HAVE_INVENTORIES (
   CREATED_AT TIMESTAMP   NOT NULL   ,
   UPDATED_AT TIMESTAMP   NOT NULL   ,
 PRIMARY KEY(ID)    ,
-  FOREIGN KEY(SALE_ID)
-    REFERENCES TEJIDOS_DEV.SALES(ID),
+  FOREIGN KEY(INVOICE_ID)
+    REFERENCES TEJIDOS_DEV.INVOICES(ID),
   FOREIGN KEY(INVENTORY_ID)
     REFERENCES TEJIDOS_DEV.INVENTORIES(ID));
 
-CREATE INDEX SALES_HAVE_INVENTORIES_SALES_FK ON TEJIDOS_DEV.SALES_HAVE_INVENTORIES (SALE_ID);
-CREATE INDEX SALES_HAVE_INVENTORIES_INV_FK ON TEJIDOS_DEV.SALES_HAVE_INVENTORIES (INVENTORY_ID);
+CREATE INDEX SALES_INVOICES_FK ON TEJIDOS_DEV.SALES (INVOICE_ID);
+CREATE INDEX SALES_INV_FK ON TEJIDOS_DEV.SALES (INVENTORY_ID);
 /* ############################################################################################## */
 
 
@@ -402,7 +402,7 @@ $BODY$
                                     WHERE (pu.id = NEW.id));
 
           IF (pinventory > pexistence OR ainventory > aexistence) THEN
-            RAISE EXCEPTION 'not enough in existence to cancel purchase (If fabrics have been sold cancel the sales first OR check that the purchase has not already been cancelled)';
+            RAISE EXCEPTION 'not enough in existence to cancel purchase (If fabrics have been sold cancel the INVOICES first OR check that the purchase has not already been cancelled)';
           END IF;
           FOR r IN (SELECT * FROM tejidos_dev.inventories i WHERE i.purchase_id = NEW.id) LOOP
              DELETE FROM tejidos_dev.existences e WHERE e.inventory_id = r.id;
@@ -432,13 +432,13 @@ $BODY$
         pinventory       integer;
         ainventory       numeric(10,2);
     BEGIN
-        sales = (SELECT COUNT(*) FROM tejidos_dev.sales_have_inventories si
+        sales = (SELECT COUNT(*) FROM tejidos_dev.sales si
                                  INNER JOIN tejidos_dev.inventories i ON si.inventory_id = i.id
                                  INNER JOIN tejidos_dev.purchases p ON p.id = i.purchase_id
                                  WHERE p.id = OLD.id);
         
         IF (sales > 0) THEN
-            RAISE EXCEPTION 'fabrics have been sold (delete sales first)';
+            RAISE EXCEPTION 'fabrics have been sold (delete inveioces first)';
         END IF;
 
         IF (OLD.purchase_state = 'CURRENT') THEN
@@ -479,10 +479,10 @@ CREATE TRIGGER update_on_purchase_delete BEFORE DELETE ON tejidos_dev.purchases 
 
 
 /* ############################################################################################## */
-DROP TRIGGER IF EXISTS update_on_sales_insert ON tejidos_dev.sales_have_inventories;
-DROP FUNCTION IF EXISTS tejidos_dev.update_on_sales_insert();
+DROP TRIGGER IF EXISTS update_on_invoice_insert ON tejidos_dev.sales;
+DROP FUNCTION IF EXISTS tejidos_dev.update_on_invoice_insert();
 
-CREATE OR REPLACE FUNCTION tejidos_dev.update_on_sales_insert()
+CREATE OR REPLACE FUNCTION tejidos_dev.update_on_invoice_insert()
   RETURNS trigger AS
 $BODY$
     DECLARE
@@ -490,7 +490,7 @@ $BODY$
         a       numeric(10,2);
     BEGIN
         --
-        -- Despues de un insert en sales, se reducen las cantidades y las piezas de existences
+        -- Despues de un insert en invoices, se reducen las cantidades y las piezas de existences
         --
         p = (SELECT e.pieces FROM tejidos_dev.existences e WHERE e.inventory_id = NEW.inventory_id);
         a = (SELECT e.amount FROM tejidos_dev.existences e WHERE e.inventory_id = NEW.inventory_id);
@@ -511,24 +511,24 @@ $BODY$
 $BODY$
   LANGUAGE plpgsql;
 
-CREATE TRIGGER update_on_sales_insert AFTER INSERT ON tejidos_dev.sales_have_inventories FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_sales_insert();
+CREATE TRIGGER update_on_invoice_insert AFTER INSERT ON tejidos_dev.sales FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_invoice_insert();
 /* ############################################################################################## */
 
 
 /* ############################################################################################## */
-DROP TRIGGER IF EXISTS update_on_sales_update ON tejidos_dev.sales;
-DROP FUNCTION IF EXISTS tejidos_dev.update_on_sales_update();
+DROP TRIGGER IF EXISTS update_on_invoice_update ON tejidos_dev.invoices;
+DROP FUNCTION IF EXISTS tejidos_dev.update_on_invoice_update();
 
-CREATE OR REPLACE FUNCTION tejidos_dev.update_on_sales_update()
+CREATE OR REPLACE FUNCTION tejidos_dev.update_on_invoice_update()
   RETURNS trigger AS
 $BODY$
     DECLARE
-        r       tejidos_dev.sales_have_inventories%rowtype;
+        r       tejidos_dev.sales%rowtype;
         p       integer;
         a       numeric(10,2);
     BEGIN
-      IF (NEW.sale_state = 'CANCEL') THEN
-        FOR r IN (SELECT * FROM tejidos_dev.sales_have_inventories s WHERE s.sale_id = NEW.id) LOOP
+      IF (NEW.invoice_state = 'CANCEL') THEN
+        FOR r IN (SELECT * FROM tejidos_dev.sales s WHERE s.invoice_id = NEW.id) LOOP
           a = (SELECT e.amount FROM tejidos_dev.existences e WHERE e.inventory_id = r.inventory_id);
           p = (SELECT e.pieces FROM tejidos_dev.existences e WHERE e.inventory_id = r.inventory_id);
             IF (a > 0) THEN 
@@ -540,8 +540,8 @@ $BODY$
                 INSERT INTO tejidos_dev.existences (inventory_id, pieces, amount, unit, created_at, updated_at) VALUES (r.inventory_id, r.pieces, r.amount, r.unit, current_timestamp, current_timestamp);
             END IF;
         END LOOP;
-      ELSIF (NEW.sale_state = 'CURRENT') THEN
-        FOR r IN (SELECT * FROM tejidos_dev.sales_have_inventories s WHERE s.sale_id = NEW.id) LOOP
+      ELSIF (NEW.invoice_state = 'CURRENT') THEN
+        FOR r IN (SELECT * FROM tejidos_dev.sales s WHERE s.invoice_id = NEW.id) LOOP
           p = (SELECT e.pieces FROM tejidos_dev.existences e WHERE e.inventory_id = r.inventory_id);
           a = (SELECT e.amount FROM tejidos_dev.existences e WHERE e.inventory_id = r.inventory_id);
           IF (a IS NULL OR (a - r.amount) < 0) THEN RAISE EXCEPTION 'not enough amount in existence'; END IF;
@@ -561,24 +561,24 @@ $BODY$
 $BODY$
   LANGUAGE plpgsql;
 
-CREATE TRIGGER update_on_sales_update AFTER UPDATE ON tejidos_dev.sales FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_sales_update();
+CREATE TRIGGER update_on_invoice_update AFTER UPDATE ON tejidos_dev.invoices FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_invoice_update();
 /* ############################################################################################## 
 
 
 /* ############################################################################################## */
-DROP TRIGGER IF EXISTS update_on_sales_delete ON tejidos_dev.sales;
-DROP FUNCTION IF EXISTS tejidos_dev.update_on_sales_delete();
+DROP TRIGGER IF EXISTS update_on_invoice_delete ON tejidos_dev.invoices;
+DROP FUNCTION IF EXISTS tejidos_dev.update_on_invoice_delete();
 
-CREATE OR REPLACE FUNCTION tejidos_dev.update_on_sales_delete()
+CREATE OR REPLACE FUNCTION tejidos_dev.update_on_invoice_delete()
   RETURNS trigger AS
 $BODY$
     DECLARE
-        r       tejidos_dev.sales_have_inventories%rowtype;
+        r       tejidos_dev.sales%rowtype;
         p       integer;
         a       numeric(10,2);
     BEGIN
 
-      FOR r IN (SELECT * FROM tejidos_dev.sales_have_inventories s WHERE s.sale_id = OLD.id) LOOP
+      FOR r IN (SELECT * FROM tejidos_dev.sales s WHERE s.invoice_id = OLD.id) LOOP
         a = (SELECT e.amount FROM tejidos_dev.existences e WHERE e.inventory_id = r.inventory_id);
         p = (SELECT e.pieces FROM tejidos_dev.existences e WHERE e.inventory_id = r.inventory_id);
         IF (a > 0) THEN 
@@ -591,12 +591,12 @@ $BODY$
         END IF;
       END LOOP;
 
-      DELETE FROM tejidos_dev.sales_have_inventories si WHERE si.sale_id = OLD.id;
+      DELETE FROM tejidos_dev.sales si WHERE si.invoice_id = OLD.id;
 
       RETURN OLD;
     END;
 $BODY$
   LANGUAGE plpgsql;
 
-CREATE TRIGGER update_on_sales_delete BEFORE DELETE ON tejidos_dev.sales FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_sales_delete();
+CREATE TRIGGER update_on_invoice_delete BEFORE DELETE ON tejidos_dev.invoices FOR EACH ROW EXECUTE PROCEDURE tejidos_dev.update_on_invoice_delete();
 /* ############################################################################################## 

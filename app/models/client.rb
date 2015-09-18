@@ -15,4 +15,5 @@
 
 class Client < ActiveRecord::Base
   has_many :sales
+  has_and_belongs_to_many :phones
 end
