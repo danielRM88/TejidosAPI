@@ -18,3 +18,5 @@ gem 'devise', '3.5.2'
 gem 'jwt', '1.5.1'
 
 gem 'rack-cors', '0.4.0'
+
+gem 'annotate', '2.6.10'
