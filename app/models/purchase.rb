@@ -15,4 +15,7 @@
 #
 
 class Purchase < ActiveRecord::Base
+  belongs_to :supplier
+  belongs_to :iva
+  has_many :inventories
 end

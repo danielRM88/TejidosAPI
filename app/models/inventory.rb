@@ -14,4 +14,8 @@
 #
 
 class Inventory < ActiveRecord::Base
+  belongs_to :purchase
+  belongs_to :fabric
+  has_many :existences
+  has_many :sales
 end

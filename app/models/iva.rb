@@ -9,4 +9,6 @@
 #
 
 class Iva < ActiveRecord::Base
+  has_many :invoices
+  has_many :purchases
 end

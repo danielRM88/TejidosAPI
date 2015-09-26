@@ -14,4 +14,6 @@
 #
 
 class Sale < ActiveRecord::Base
+  belongs_to :invoice
+  belongs_to :inventory
 end
