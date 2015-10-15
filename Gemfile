@@ -11,6 +11,8 @@ gem 'pg', '0.18.3'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.3.0'
+  gem 'byebug', '6.0.2'
+  gem 'awesome_print', '1.6.1'
 end
 
 gem 'devise', '3.5.2'

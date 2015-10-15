@@ -14,6 +14,28 @@
 #
 
 class Client < ActiveRecord::Base
-  has_many :sales
+
+  include StateManager
+
+  has_many :invoices
   has_and_belongs_to_many :phones
+
+  validates :number_id, uniqueness: {scope: [:type_id, :client_state], message: "The client RIF (type_id, number_id) must be unique"}
+
+private
+  def get_state_field
+    return :client_state
+  end
+
+  def change_state state
+    self.client_state = state
+  end
+
+  def count_dependencies
+    self.invoices.count
+  end
+
+  def get_state
+    self.client_state
+  end
 end
