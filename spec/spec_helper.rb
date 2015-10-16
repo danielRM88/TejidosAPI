@@ -40,6 +40,12 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
+  Dir["./spec/support/**/*.rb"].sort.each {|f| require f}
+
+  # FactoryGirl.definition_file_paths = [File.expand_path('../factories', __FILE__)]
+  FactoryGirl.find_definitions
+  config.include FactoryGirl::Syntax::Methods
+
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
 =begin
