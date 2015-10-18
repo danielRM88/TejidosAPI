@@ -1,7 +1,7 @@
 class CreateExistences < ActiveRecord::Migration
   def change
     create_table :existences do |t|
-      t.references :inventory, index: true
+      t.references :inventory, null: false, index: true
       t.integer :pieces, null: false
       t.decimal :amount, precision: 10, scale: 2, null: false
       t.string :unit, limit: 15, null: false

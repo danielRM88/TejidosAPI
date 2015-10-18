@@ -1,8 +1,8 @@
 class CreatePurchases < ActiveRecord::Migration
   def change
     create_table :purchases do |t|
-      t.references :supplier, index: true
-      t.references :iva, index: true
+      t.references :supplier, null: false, index: true
+      t.references :iva, null: false, index: true
       t.string :purchase_number, limit: 50, null: false
       t.decimal :subtotal, precision: 18, scale: 2, null: false
       t.string :form_of_payment, limit: 155, null: false

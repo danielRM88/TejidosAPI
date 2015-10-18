@@ -1,8 +1,8 @@
 class CreateInventories < ActiveRecord::Migration
   def change
     create_table :inventories do |t|
-      t.references :purchase, index: true
-      t.references :fabric, index: true
+      t.references :purchase, null: false, index: true
+      t.references :fabric, null: false, index: true
       t.integer :pieces, null: false
       t.decimal :amount, precision: 10, scale: 2, null: false
       t.string :unit, limit: 15, null: false

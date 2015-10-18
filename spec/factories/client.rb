@@ -14,11 +14,32 @@
 #
 
 FactoryGirl.define do
-  factory :client do
+  factory :client, class: Client do
     client_name "Daniel Rosato"
     type_id     "V"
     number_id   "18358068"
     address     "av. Chacao, Macaracuay, Caracas"
     email       "rosato.daniel@gmail.com"
+  end
+  factory :client2, class: Client do
+    client_name "Mauro Rosato"
+    type_id     "V"
+    number_id   "5218452"
+    address     "av. Chacao, Macaracuay, Caracas"
+    email       "maurorosato1@gmail.com"
+  end
+  factory :client3, class: Client do
+    client_name "Fabiola Rosato"
+    type_id     "V"
+    number_id   "20653663"
+    address     "av. Chacao, Macaracuay, Caracas"
+    email       "fabix182@gmail.com"
+  end
+  factory :client4, class: Client do
+    client_name "Cristina Monaco"
+    type_id     "V"
+    number_id   "4885796"
+    address     "av. Chacao, Macaracuay, Caracas"
+    email       "fabix182@gmail.com"
   end
 end

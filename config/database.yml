@@ -10,21 +10,19 @@ development:
   database: tejidos_dev
   username: tuser
   password: <%= ENV['TEJIDOSFD_DEV_PASSWORD'] %>
-  # schema_search_path: "tejidos_dev"
   host: localhost
   port: 5432
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
-# test: &test
-#   <<: *default
-#   database: postgres
-#   username: test
-#   password: <%= ENV['TEJIDOSFD_TEST_PASSWORD'] %>
-#   schema_search_path: "tejidos_test"
-#   host: localhost
-#   port: 5432
+test: &test
+  <<: *default
+  database: tejidos_test
+  username: tuser
+  password: <%= ENV['TEJIDOSFD_DEV_PASSWORD'] %>
+  host: localhost
+  port: 5432
 
 # production:
 #   <<: *default

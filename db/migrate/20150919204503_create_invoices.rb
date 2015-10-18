@@ -1,8 +1,8 @@
 class CreateInvoices < ActiveRecord::Migration
   def change
     create_table :invoices do |t|
-      t.references :client, index: true
-      t.references :iva, index: true
+      t.references :client, null: false, index: true
+      t.references :iva, null: false, index: true
       t.string :invoice_number, limit: 50, null: false
       t.decimal :subtotal, precision: 18, scale: 2, null: false
       t.date :invoice_date, null: false

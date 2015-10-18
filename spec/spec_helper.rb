@@ -43,7 +43,6 @@ RSpec.configure do |config|
   Dir["./spec/support/**/*.rb"].sort.each {|f| require f}
 
   # FactoryGirl.definition_file_paths = [File.expand_path('../factories', __FILE__)]
-  FactoryGirl.find_definitions
   config.include FactoryGirl::Syntax::Methods
 
 # The settings below are suggested to provide a good initial experience

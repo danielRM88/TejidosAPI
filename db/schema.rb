@@ -30,8 +30,8 @@ ActiveRecord::Schema.define(version: 20151017233254) do
   add_index "clients", ["type_id", "number_id"], name: "CLIENTS_UNIQUE_ID", unique: true, where: "((client_state)::text = 'CURRENT'::text)", using: :btree
 
   create_table "clients_phones", force: :cascade do |t|
-    t.integer  "phone_id"
-    t.integer  "client_id"
+    t.integer  "phone_id",   null: false
+    t.integer  "client_id",  null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 20151017233254) do
   add_index "clients_phones", ["phone_id"], name: "index_clients_phones_on_phone_id", using: :btree
 
   create_table "existences", force: :cascade do |t|
-    t.integer  "inventory_id"
+    t.integer  "inventory_id",                                     null: false
     t.integer  "pieces",                                           null: false
     t.decimal  "amount",                  precision: 10, scale: 2, null: false
     t.string   "unit",         limit: 15,                          null: false
@@ -64,8 +64,8 @@ ActiveRecord::Schema.define(version: 20151017233254) do
   add_index "fabrics", ["code"], name: "FABRICS_UNIQUE_CODE", unique: true, where: "((fabric_state)::text = 'CURRENT'::text)", using: :btree
 
   create_table "inventories", force: :cascade do |t|
-    t.integer  "purchase_id"
-    t.integer  "fabric_id"
+    t.integer  "purchase_id",                                     null: false
+    t.integer  "fabric_id",                                       null: false
     t.integer  "pieces",                                          null: false
     t.decimal  "amount",                 precision: 10, scale: 2, null: false
     t.string   "unit",        limit: 15,                          null: false
@@ -78,8 +78,8 @@ ActiveRecord::Schema.define(version: 20151017233254) do
   add_index "inventories", ["purchase_id"], name: "index_inventories_on_purchase_id", using: :btree
 
   create_table "invoices", force: :cascade do |t|
-    t.integer  "client_id"
-    t.integer  "iva_id"
+    t.integer  "client_id",                                                                null: false
+    t.integer  "iva_id",                                                                   null: false
     t.string   "invoice_number",  limit: 50,                                               null: false
     t.decimal  "subtotal",                    precision: 18, scale: 2,                     null: false
     t.date     "invoice_date",                                                             null: false
@@ -112,8 +112,8 @@ ActiveRecord::Schema.define(version: 20151017233254) do
   add_index "phones", ["country_code", "area_code", "phone_number"], name: "PHONES_UNIQUE_PHONE", unique: true, using: :btree
 
   create_table "phones_suppliers", force: :cascade do |t|
-    t.integer  "phone_id"
-    t.integer  "supplier_id"
+    t.integer  "phone_id",    null: false
+    t.integer  "supplier_id", null: false
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end
@@ -122,8 +122,8 @@ ActiveRecord::Schema.define(version: 20151017233254) do
   add_index "phones_suppliers", ["supplier_id"], name: "index_phones_suppliers_on_supplier_id", using: :btree
 
   create_table "purchases", force: :cascade do |t|
-    t.integer  "supplier_id"
-    t.integer  "iva_id"
+    t.integer  "supplier_id",                                                              null: false
+    t.integer  "iva_id",                                                                   null: false
     t.string   "purchase_number", limit: 50,                                               null: false
     t.decimal  "subtotal",                    precision: 18, scale: 2,                     null: false
     t.string   "form_of_payment", limit: 155,                                              null: false
@@ -138,8 +138,8 @@ ActiveRecord::Schema.define(version: 20151017233254) do
   add_index "purchases", ["supplier_id"], name: "index_purchases_on_supplier_id", using: :btree
 
   create_table "sales", force: :cascade do |t|
-    t.integer  "invoice_id"
-    t.integer  "inventory_id"
+    t.integer  "invoice_id",                                       null: false
+    t.integer  "inventory_id",                                     null: false
     t.integer  "pieces",                                           null: false
     t.decimal  "amount",                  precision: 10, scale: 2, null: false
     t.string   "unit",         limit: 15,                          null: false
