@@ -3,46 +3,9 @@ module StateManager
   
   class TemplateError < RuntimeError; end
 
-  CURRENT_STATE = 'CURRENT'
-  UPDATED_STATE = 'UPDATED'
-  DELETED_STATE = 'DELETED'
+  include Stateful
 
-  attr_accessor :perform_update_check, :perform_delete_check
-
-  included do
-    before_update :check_update_dependencies, if: Proc.new { |model| model.perform_update_check != false }
-    before_destroy :check_destroy_dependencies, if: Proc.new { |model| model.perform_delete_check != false }
-  end
-
-  # Validation that checks if the record
-  # does not have dependencies and
-  # therefore can be updated.
-  def check_update_dependencies
-    dependencies = count_dependencies
-    if dependencies > 0
-      return false
-    end
-  end
-
-  # Validation that checks if the record
-  # does not have dependencies and
-  # therefore can be deleted.
-  def check_destroy_dependencies
-    dependencies = count_dependencies
-    if dependencies > 0
-      return false
-    end
-  end
-
-  # Method that updates a record taking into 
-  # consideration that it may have dependencies.
-  # If the record has dependencies and it is not updated
-  # through this method, the validations preventing the update
-  # will take place.
-  def update_record
-    # we tell the validators to not perform validations on the dependencies
-    # because we are taking the appropiate steps in this method
-    self.perform_update_check = false
+  def save
     # we check if the record has dependencies
     dependencies = count_dependencies
     # we check if the state of the record is beeing changed
@@ -59,12 +22,7 @@ module StateManager
       # if the record is only changing states
       if self.changes.length == 1 && !final_state.blank?
         # if the state is not changing to deleted
-        if final_state != DELETED_STATE
-          self.save
-        else
-          # if it is then we delete the record
-          destroy_record
-        end
+        super
       # if the changes are not just in the state
       else
         # we create a duplicate of the record
@@ -74,9 +32,9 @@ module StateManager
         # update the original one to have state updated
         # since the record has dependencies, it is not
         # deletable
-        change_state UPDATED_STATE
+        self.change_state UPDATED_STATE
         # save the original one as updated
-        self.save
+        super
         # and create a new record with the modified fields
         new_record.save
       end
@@ -87,27 +45,22 @@ module StateManager
       # and is changed to deleted
       if self.changes.length == 1 && !final_state.blank? && final_state == DELETED_STATE
         # then we delete the record
-        destroy_record
+        self.destroy
       else
         # otherwise it's just a regular update
-        self.save
+        super
       end
     end
   end
 
-  # Method that deletes a record taking into 
-  # consideration that it may have dependencies.
-  # If the record has dependencies and it is not deleted
-  # through this method, the validations preventing the deletion
-  # will take place.
-  def destroy_record
-    perform_delete_check = false    
-    dependencies = count_dependencies
-    if dependencies > 0
-      change_state DELETED_STATE
-      self.save
+  def destroy
+    if self.count_dependencies > 0
+      if self.get_state == CURRENT_STATE
+        self.change_state DELETED_STATE
+        self.save
+      end
     else
-      self.delete
+      super
     end
   end
 

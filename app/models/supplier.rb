@@ -14,6 +14,38 @@
 #
 
 class Supplier < ActiveRecord::Base
+
+  include StateManager
+
   has_many :purchases
   has_and_belongs_to_many :phones
+
+  validates :supplier_name, presence: true
+  validates :supplier_name, length: { maximum: 155 }
+  validates :type_id, presence: true
+  validates :type_id, length: { maximum: 5 }
+  validates :number_id, presence: true
+  validates :number_id, length: { maximum: 50 }
+  validates :number_id, uniqueness: {case_sensitive: false, scope: [:type_id, :supplier_state]}, if: :current?
+  validates :address, length: { maximum: 255 }
+  validates :email, length: { maximum: 25 }
+  validates :supplier_state, presence: true
+  validates :supplier_state, length: { maximum: 20 }
+  validates :supplier_state, inclusion: { in: STATES, message: "%{value} is not a valid supplier_state" }
+
+  def get_state
+    self.supplier_state
+  end
+
+  def get_state_field
+    return :supplier_state
+  end
+
+  def change_state state
+    self.supplier_state = state
+  end
+
+  def count_dependencies
+    self.purchases.count
+  end
 end

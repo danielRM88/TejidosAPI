@@ -18,4 +18,13 @@ FactoryGirl.define do
   factory :iva3, class: Iva do
     percentage  12
   end
+  factory :iva4, class: Iva do
+    percentage  15
+  end
+  factory :iva5, class: Iva do
+    percentage  17
+  end
+  factory :iva6, class: Iva do
+    percentage  16
+  end
 end

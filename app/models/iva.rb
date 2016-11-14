@@ -11,4 +11,6 @@
 class Iva < ActiveRecord::Base
   has_many :invoices
   has_many :purchases
+
+  validates :percentage, numericality: { greater_than_or_equal_to: 0 }
 end

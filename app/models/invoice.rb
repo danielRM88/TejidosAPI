@@ -15,7 +15,33 @@
 #
 
 class Invoice < ActiveRecord::Base
+  include Stateful
+
   belongs_to :client
   belongs_to :iva
   has_many :sales
+
+  validates :client, presence: true
+  validates :iva, presence: true
+  validates :invoice_number, presence: true
+  validates :invoice_number, length: { maximum: 50 }
+  validates :invoice_number, uniqueness: true
+  validates :subtotal, numericality: { greater_than: 0 }
+  validates :invoice_date, presence: true
+  validates :form_of_payment, presence: true
+  validates :form_of_payment, length: { maximum: 155 }
+  validates :invoice_state, presence: true
+  validates :invoice_state, length: { maximum: 20 }
+  validates :invoice_state, inclusion: { in: STATES, message: "%{value} is not a valid invoice_state" }
+
+  def subtotal
+    subtotal = 0
+
+    sales.each do |sale|
+      subtotal += sale.subtotal
+    end
+
+    return subtotal
+  end
+
 end

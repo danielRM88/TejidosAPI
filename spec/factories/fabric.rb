@@ -37,4 +37,28 @@ FactoryGirl.define do
     color       "white"
     unit_price  1500
   end
+  factory :fabric5, class: Fabric do
+    code        "KK8972"
+    description "Red RIP"
+    color       "red"
+    unit_price  200
+  end
+  factory :fabric6, class: Fabric do
+    code        "2k23lk"
+    description "Blue RIP"
+    color       "blue"
+    unit_price  250
+  end
+  factory :fabric7, class: Fabric do
+    code        "laskjd"
+    description "Grey RIP"
+    color       "grey"
+    unit_price  250
+  end
+  factory :fabric8, class: Fabric do
+    code        "KJ9999"
+    description "Killer Joe"
+    color       "black"
+    unit_price  750
+  end
 end

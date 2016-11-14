@@ -14,6 +14,7 @@ group :development, :test do
   gem 'awesome_print', '1.6.1'
   gem 'factory_girl_rails', '4.0'
   gem 'database_cleaner', '1.5.0'
+  gem 'shoulda-matchers', '~> 3.1'
 end
 
 gem 'devise', '3.5.2'

@@ -13,5 +13,12 @@
 require 'rails_helper'
 
 RSpec.describe Phone, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  subject { FactoryGirl.create :phone }
+
+  it { should validate_presence_of(:country_code) }
+  it { should validate_length_of(:country_code).is_at_most(5) }
+  it { should validate_presence_of(:area_code) }
+  it { should validate_length_of(:area_code).is_at_most(5) }
+  it { should validate_presence_of(:phone_number) }
+  it { should validate_length_of(:phone_number).is_at_most(15) }
 end

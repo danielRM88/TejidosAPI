@@ -20,13 +20,23 @@ class Client < ActiveRecord::Base
   has_many :invoices
   has_and_belongs_to_many :phones
 
-  validates :number_id, uniqueness: {scope: [:type_id, :client_state], message: "The client RIF (type_id, number_id) must be unique"}
+  validates :client_name, presence: true
+  validates :client_name, length: { maximum: 50 }
+  validates :type_id, presence: true
+  validates :type_id, length: { maximum: 5 }
+  validates :number_id, presence: true
+  validates :number_id, length: { maximum: 50 }
+  validates :number_id, uniqueness: {case_sensitive: false, scope: [:type_id, :client_state]}, if: :current?
+  validates :address, length: { maximum: 255 }
+  validates :email, length: { maximum: 25 }
+  validates :client_state, presence: true
+  validates :client_state, length: { maximum: 20 }
+  validates :client_state, inclusion: { in: STATES, message: "%{value} is not a valid client_state" }
 
   def get_state
     self.client_state
   end
 
-private
   def get_state_field
     return :client_state
   end

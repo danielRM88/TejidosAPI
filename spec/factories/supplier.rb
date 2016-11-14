@@ -28,4 +28,32 @@ FactoryGirl.define do
     address       "San Bernardino, Caracas"
     email         "info@wisanco.com"
   end
+  factory :supplier3, class: Supplier do
+    supplier_name "Textiles CA."
+    type_id       "J"
+    number_id     "555555555"
+    address       "La Candelaria, Caracas"
+    email         "info@textiles.com"
+  end
+  factory :supplier4, class: Supplier do
+    supplier_name "Fabrics Empire"
+    type_id       "J"
+    number_id     "55555565685"
+    address       "El Llanito, Caracas"
+    email         "info@empire.com"
+  end
+  factory :supplier5, class: Supplier do
+    supplier_name "Shirts Emporium"
+    type_id       "J"
+    number_id     "99993829"
+    address       "La Castellana, Caracas"
+    email         "info@emporium.com"
+  end
+  factory :supplier6, class: Supplier do
+    supplier_name "Fabrics Builder"
+    type_id       "J"
+    number_id     "1327383992"
+    address       "La Miranda, Caracas"
+    email         "info@builder.com"
+  end
 end
