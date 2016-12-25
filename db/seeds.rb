@@ -5,3 +5,22 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+FactoryGirl.create(:fabric)
+FactoryGirl.create(:fabric2)
+FactoryGirl.create(:fabric3)
+FactoryGirl.create(:fabric4)
+
+FactoryGirl.create(:iva)
+FactoryGirl.create(:iva2)
+FactoryGirl.create(:iva3)
+
+FactoryGirl.create(:supplier)
+FactoryGirl.create(:supplier2)
+
+FactoryGirl.create(:client)
+FactoryGirl.create(:client2)
+FactoryGirl.create(:client3)
+FactoryGirl.create(:client4)
+
+FactoryGirl.create(:purchase)
+FactoryGirl.create(:purchase2)
