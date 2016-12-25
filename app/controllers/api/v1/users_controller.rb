@@ -1,7 +1,7 @@
 module Api::V1
   class UsersController < ApplicationController
     before_action :set_user, only: [:show, :update, :destroy]
-    before_action :authenticate_v1_user
+    before_action :authenticate_request!
 
     # GET /users
     # GET /users.json

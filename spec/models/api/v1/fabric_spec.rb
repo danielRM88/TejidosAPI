@@ -4,12 +4,12 @@
 #
 #  id           :integer          not null, primary key
 #  code         :string(20)       not null
-#  description  :string(255)
-#  color        :string(50)
+#  description  :string(255)      not null
+#  color        :string(50)       not null
 #  unit_price   :decimal(18, 2)   not null
+#  fabric_state :string(20)       default("CURRENT"), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  fabric_state :string(20)       default("CURRENT"), not null
 #
 
 require 'rails_helper'

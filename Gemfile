@@ -25,6 +25,4 @@ gem 'rack-cors', '0.4.0'
 
 gem 'annotate', '2.6.10'
 
-gem 'knock', '2.0'
-
 gem 'bcrypt-ruby', '~> 3.1.2'

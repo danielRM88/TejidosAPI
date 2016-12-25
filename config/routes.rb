@@ -13,8 +13,11 @@ Rails.application.routes.draw do
       resources :ivas, except: [:new, :edit]
       # resources :sales, except: [:new, :edit]
       resources :clients, except: [:new, :edit]
+      # mount Knock::Engine => "/knock"
+      post 'auth_user' => 'user_tokens#create'
     end
   end
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
