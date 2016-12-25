@@ -16,7 +16,7 @@ class CreateUpdateOnPurchaseDeleteTrigger < ActiveRecord::Migration
                                                WHERE p.id = OLD.id);
                       
                       IF (sales > 0) THEN
-                          RAISE EXCEPTION 'fabrics have been sold (delete inveioces first)';
+                          RAISE EXCEPTION 'fabrics have been sold (delete invoices first)';
                       END IF;
 
                       IF (OLD.purchase_state = 'CURRENT') THEN
