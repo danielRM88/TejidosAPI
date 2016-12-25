@@ -1,29 +1,30 @@
 source 'https://rubygems.org'
 
-
 gem 'rails', '4.2.4'
 
 gem 'rails-api', '0.4.0'
 
 gem 'spring', '1.3.6', :group => :development
 
-# gem 'sqlite3'
+gem 'pg', '0.18.3'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.3.0'
+  gem 'byebug', '6.0.2'
+  gem 'awesome_print', '1.6.1'
+  gem 'factory_girl_rails', '4.0'
+  gem 'database_cleaner', '1.5.0'
+  gem 'shoulda-matchers', '~> 3.1'
 end
 
-# To use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
+gem 'devise', '3.5.2'
 
-# To use Jbuilder templates for JSON
-# gem 'jbuilder'
+gem 'jwt', '1.5.1'
 
-# Use unicorn as the app server
-# gem 'unicorn'
+gem 'rack-cors', '0.4.0'
 
-# Deploy with Capistrano
-# gem 'capistrano', :group => :development
+gem 'annotate', '2.6.10'
 
-# To use debugger
-# gem 'ruby-debug19', :require => 'ruby-debug'
+gem 'knock', '2.0'
+
+gem 'bcrypt-ruby', '~> 3.1.2'
