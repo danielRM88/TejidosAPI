@@ -1,6 +1,7 @@
 module Api::V1
   class InvoicesController < ApplicationController
     before_action :set_invoice, only: [:show, :update, :destroy]
+    before_action :authenticate_request!
 
     # GET /invoices
     # GET /invoices.json

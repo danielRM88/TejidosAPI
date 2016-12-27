@@ -1,6 +1,7 @@
 module Api::V1
   class FabricsController < ApplicationController
     before_action :set_fabric, only: [:show, :update, :destroy]
+    before_action :authenticate_request!
 
     # GET /fabrics
     # GET /fabrics.json

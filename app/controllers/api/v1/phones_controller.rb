@@ -1,6 +1,7 @@
 module Api::V1
   class PhonesController < ApplicationController
     before_action :set_phone, only: [:show, :update, :destroy]
+    before_action :authenticate_request!
 
     # GET /phones
     # GET /phones.json

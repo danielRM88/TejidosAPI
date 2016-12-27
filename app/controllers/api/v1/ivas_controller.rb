@@ -1,6 +1,7 @@
 module Api::V1
   class IvasController < ApplicationController
     before_action :set_iva, only: [:show, :update, :destroy]
+    before_action :authenticate_request!
 
     # GET /ivas
     # GET /ivas.json

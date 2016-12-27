@@ -1,6 +1,7 @@
 module Api::V1
   class PurchasesController < ApplicationController
     before_action :set_purchase, only: [:show, :update, :destroy]
+    before_action :authenticate_request!
 
     # GET /purchases
     # GET /purchases.json
