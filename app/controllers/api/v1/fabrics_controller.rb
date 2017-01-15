@@ -6,9 +6,9 @@ module Api::V1
     # GET /fabrics
     # GET /fabrics.json
     def index
-      @fabrics = Fabric.all
+      @fabrics = Fabric.all.paginate(:page => params[:page], per_page: 10)
 
-      render json: @fabrics
+      render json: {fabrics: @fabrics, total_pages: @fabrics.total_pages, current_page: @fabrics.current_page}
     end
 
     # GET /fabrics/1
@@ -56,7 +56,7 @@ module Api::V1
       end
 
       def fabric_params
-        params[:fabric]
+        params.require(:fabric).permit(:code, :description, :color, :unit_price)
       end
   end
 end

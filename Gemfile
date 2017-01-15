@@ -26,3 +26,5 @@ gem 'rack-cors', '0.4.0'
 gem 'annotate', '2.6.10'
 
 gem 'bcrypt-ruby', '~> 3.1.2'
+
+gem 'will_paginate', '~> 3.1.0'
