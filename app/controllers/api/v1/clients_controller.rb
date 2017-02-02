@@ -6,9 +6,9 @@ module Api::V1
     # GET /clients
     # GET /clients.json
     def index
-      @clients = Client.all
+      @clients = Client.all.paginate(:page => params[:page], per_page: 10)
 
-      render json: @clients
+      render json: { clients: @clients, total_pages: @clients.total_pages, current_page: @clients.current_page }
     end
 
     # GET /clients/1
@@ -56,7 +56,7 @@ module Api::V1
       end
 
       def client_params
-        params[:client]
+        params.require(:client).permit(:client_name, :type_id, :number_id, :address, :email)
       end
   end
 end
