@@ -29,6 +29,7 @@ class Api::V1::Client < ActiveRecord::Base
   validates :number_id, uniqueness: {case_sensitive: false, scope: [:type_id, :client_state]}, if: :current?
   validates :address, length: { maximum: 255 }
   validates :email, length: { maximum: 25 }
+  validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i }
   validates :client_state, presence: true
   validates :client_state, length: { maximum: 20 }
   validates :client_state, inclusion: { in: STATES, message: "%{value} is not a valid client_state" }

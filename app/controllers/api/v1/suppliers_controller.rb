@@ -6,9 +6,9 @@ module Api::V1
     # GET /suppliers
     # GET /suppliers.json
     def index
-      @suppliers = Supplier.all
+      @suppliers = Supplier.all.paginate(:page => params[:page], per_page: 10)
 
-      render json: @suppliers
+      render json: { suppliers: @suppliers, total_pages: @suppliers.total_pages, current_page: @suppliers.current_page }
     end
 
     # GET /suppliers/1
@@ -56,7 +56,7 @@ module Api::V1
       end
 
       def supplier_params
-        params[:supplier]
+        params.require(:supplier).permit(:supplier_name, :type_id, :number_id, :address, :email)
       end
   end
 end
