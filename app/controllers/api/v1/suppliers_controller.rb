@@ -6,7 +6,13 @@ module Api::V1
     # GET /suppliers
     # GET /suppliers.json
     def index
+      type_id = params[:type_id]
+      number_id = params[:number_id]
       @suppliers = Supplier.all.paginate(:page => params[:page], per_page: 10)
+
+      if !type_id.blank? && !number_id.blank?
+        @suppliers = @suppliers.with_similar_type_and_number_id type_id, number_id
+      end
 
       render json: { suppliers: @suppliers, total_pages: @suppliers.total_pages, current_page: @suppliers.current_page }
     end

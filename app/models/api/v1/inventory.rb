@@ -14,7 +14,7 @@
 #
 
 class Api::V1::Inventory < ActiveRecord::Base
-  belongs_to :purchase
+  belongs_to :purchase, inverse_of: :inventories
   belongs_to :fabric
   has_many :existences
   has_many :sales

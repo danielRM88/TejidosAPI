@@ -18,6 +18,8 @@ class Api::V1::Fabric < ActiveRecord::Base
 
   has_many :inventories
 
+  scope :with_similar_code, -> (code) { where('"fabrics"."code" ILIKE ?', "%#{code}%") }
+
   validates :code, presence: true
   validates :code, length: { maximum: 20 }
   validates :code, uniqueness: {case_sensitive: false, scope: :fabric_state}, if: :current?

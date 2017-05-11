@@ -25,6 +25,7 @@ module Api::V1
       if @purchase.save
         render json: @purchase, status: :created, location: @purchase
       else
+        puts @purchase.errors.inspect
         render json: @purchase.errors, status: :unprocessable_entity
       end
     end
@@ -56,7 +57,7 @@ module Api::V1
       end
 
       def purchase_params
-        params[:purchase]
+        params.require(:purchase).permit(:purchase_number, :supplier_id, :purchase_date, :iva_id, :form_of_payment, :inventories_attributes => [:fabric_id, :pieces, :amount, :unit, :unit_price])
       end
   end
 end

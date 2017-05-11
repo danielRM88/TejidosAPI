@@ -20,7 +20,7 @@ class Api::V1::Purchase < ActiveRecord::Base
 
   belongs_to :supplier
   belongs_to :iva
-  has_many :inventories
+  has_many :inventories, inverse_of: :purchase
 
   validates :supplier, presence: true
   validates :iva, presence: true
@@ -35,6 +35,8 @@ class Api::V1::Purchase < ActiveRecord::Base
   validates :purchase_state, length: { maximum: 20 }
   validates :purchase_state, inclusion: { in: STATES, message: "%{value} is not a valid invoice_state" }
 
+  accepts_nested_attributes_for :inventories
+
   def current?
     self.purchase_state == CURRENT_STATE
   end
@@ -46,6 +48,7 @@ class Api::V1::Purchase < ActiveRecord::Base
       subtotal += inventory.subtotal
     end
 
+    self[:subtotal] = subtotal
     return subtotal
   end
 end

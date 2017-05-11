@@ -6,7 +6,13 @@ module Api::V1
     # GET /fabrics
     # GET /fabrics.json
     def index
+      code = params[:code]
+
       @fabrics = Fabric.all.paginate(:page => params[:page], per_page: 10)
+      
+      if !code.blank?
+        @fabrics = @fabrics.with_similar_code code
+      end
 
       render json: {fabrics: @fabrics, total_pages: @fabrics.total_pages, current_page: @fabrics.current_page}
     end

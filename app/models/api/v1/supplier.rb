@@ -20,6 +20,8 @@ class Api::V1::Supplier < ActiveRecord::Base
   has_many :purchases
   has_and_belongs_to_many :phones
 
+  scope :with_similar_type_and_number_id, -> (type_id, number_id) { where(type_id: type_id).where('"suppliers"."number_id" ILIKE ?', "%#{number_id}%") }
+
   validates :supplier_name, presence: true
   validates :supplier_name, length: { maximum: 155 }
   validates :type_id, presence: true
