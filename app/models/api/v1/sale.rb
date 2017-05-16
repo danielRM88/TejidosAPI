@@ -29,6 +29,6 @@ class Api::V1::Sale < ActiveRecord::Base
   validates :unit_price, numericality: { greater_than: 0 }
 
   def subtotal
-    return (self.unit_price*self.pieces)
+    return (self.unit_price*self.amount)
   end
 end

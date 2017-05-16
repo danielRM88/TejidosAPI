@@ -31,6 +31,7 @@ class Api::V1::Inventory < ActiveRecord::Base
   validates :unit_price, numericality: { greater_than: 0 }
 
   def subtotal
-    return (self.pieces*self.unit_price)
+    return 0 if (self.amount.blank? || self.unit_price.blank?)
+    return (self.amount*self.unit_price)
   end
 end

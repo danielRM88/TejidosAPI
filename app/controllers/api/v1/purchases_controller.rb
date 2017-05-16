@@ -57,7 +57,7 @@ module Api::V1
       end
 
       def purchase_params
-        params.require(:purchase).permit(:purchase_number, :supplier_id, :purchase_date, :iva_id, :form_of_payment, :inventories_attributes => [:fabric_id, :pieces, :amount, :unit, :unit_price])
+        params.require(:purchase).permit(:purchase_number, :supplier_id, :purchase_date, :vat, :form_of_payment, :inventories_attributes => [:fabric_id, :pieces, :amount, :unit, :unit_price])
       end
   end
 end

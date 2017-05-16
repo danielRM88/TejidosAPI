@@ -45,7 +45,7 @@ module Api::V1
     it { should validate_presence_of(:unit_price) }
     it { should validate_numericality_of(:unit_price) }
 
-    it "should have a subtotal equals to the pieces * unit_price" do
+    it "should have a subtotal equals to the amount * unit_price" do
       # inventory = Inventory.create(purchase: FactoryGirl.create(:purchase, supplier: @supplier, vat: @vat), fabric: @fabric, pieces: 100, amount: 50, unit: 'kg', unit_price: 150)
       purchase = Purchase.new(supplier: @supplier, vat: @vat, purchase_number: "0000001b", subtotal: 10000, form_of_payment: "CASH", purchase_date: Date.new)
       inventory = Inventory.new(purchase: purchase, fabric: @fabric, pieces: 10, amount: 5, unit: 'kg', unit_price: 50)
@@ -53,7 +53,7 @@ module Api::V1
       purchase.inventories << inventory
       purchase.save
 
-      expect(inventory.subtotal).to eq((inventory.pieces*inventory.unit_price))
+      expect(inventory.subtotal).to eq((inventory.amount*inventory.unit_price))
     end
 
     it "should insert into existence after created" do

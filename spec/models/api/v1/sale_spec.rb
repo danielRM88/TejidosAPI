@@ -85,10 +85,10 @@ module Api::V1
       it { should validate_presence_of(:unit_price) }
       it { should validate_numericality_of(:unit_price) }
 
-      it "should have a subtotal equals to the pieces * unit_price" do
+      it "should have a subtotal equals to the amount * unit_price" do
         sale = Sale.create(invoice: FactoryGirl.create(:invoice, vat: @vat, client: @client), inventory: @inventory2, pieces: 7, amount: 2, unit: 'kg', unit_price: 150)
 
-        expect(sale.subtotal).to eq((sale.pieces*sale.unit_price))
+        expect(sale.subtotal).to eq((sale.amount*sale.unit_price))
       end
 
       it "should remove from existence after created" do
