@@ -17,7 +17,8 @@
 FactoryGirl.define do
   factory :invoice, class: Api::V1::Invoice do
     client { FactoryGirl.create :client }
-    iva { FactoryGirl.create :iva }
+    # iva { FactoryGirl.create :iva }
+    vat 12.5
     invoice_number "000001-z"
     subtotal 10000
     invoice_date Date.new

@@ -32,10 +32,13 @@ module Api::V1
     it "should create new record when updated if it has dependencies" do
       fabric = FactoryGirl.create :fabric2
       
-      iva = FactoryGirl.create :iva3
+      # vat = FactoryGirl.create :vat3
+      vat = 13
       supplier = FactoryGirl.create :supplier3
-      purchase = Purchase.create(supplier: supplier, iva: iva, purchase_number: "0000001q", subtotal: 10000, form_of_payment: "CASH", purchase_date: Date.new)
-      inventory1 = Inventory.create(purchase: purchase, fabric: fabric, pieces: 10, amount: 5, unit: 'kg', unit_price: 50)
+      purchase = Purchase.new(supplier: supplier, vat: vat, purchase_number: "0000001q", subtotal: 10000, form_of_payment: "CASH", purchase_date: Date.new)
+      inventory1 = Inventory.new(purchase: purchase, fabric: fabric, pieces: 10, amount: 5, unit: 'kg', unit_price: 50)
+      purchase.inventories << inventory1
+      purchase.save
 
       fabric.description = "New Description"
       fabric.save
@@ -53,10 +56,13 @@ module Api::V1
     it "should update status when deleted if it has dependencies" do
       fabric = FactoryGirl.create :fabric3
 
-      iva = FactoryGirl.create :iva2
+      # vat = FactoryGirl.create :vat2
+      vat = 12
       supplier = FactoryGirl.create :supplier2
-      purchase = Purchase.create(supplier: supplier, iva: iva, purchase_number: "0000001q", subtotal: 10000, form_of_payment: "CASH", purchase_date: Date.new)
-      inventory1 = Inventory.create(purchase: purchase, fabric: fabric, pieces: 10, amount: 5, unit: 'kg', unit_price: 50)
+      purchase = Purchase.new(supplier: supplier, vat: vat, purchase_number: "0000001q", subtotal: 10000, form_of_payment: "CASH", purchase_date: Date.new)
+      inventory1 = Inventory.new(purchase: purchase, fabric: fabric, pieces: 10, amount: 5, unit: 'kg', unit_price: 50)
+      purchase.inventories << inventory1
+      purchase.save
 
       fabric.destroy
       expect(fabric.fabric_state).to eq(Stateful::DELETED_STATE)

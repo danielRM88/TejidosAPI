@@ -6,7 +6,7 @@
 #  user_name       :string(50)       not null
 #  user_lastname   :string(50)       not null
 #  password_digest :string           not null
-#  email           :string           default(""), not null
+#  email           :string           not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #

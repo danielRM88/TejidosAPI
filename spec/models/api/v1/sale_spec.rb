@@ -19,7 +19,8 @@ module Api::V1
     RSpec.describe Sale, type: :model do
       before(:all) do
         @client = FactoryGirl.create :client4
-        @iva = FactoryGirl.create :iva5
+        # @vat = FactoryGirl.create :vat5
+        @vat = 12
         @fabric = FactoryGirl.create :fabric6
         @fabric2 = FactoryGirl.create :fabric7
         @supplier = FactoryGirl.create :supplier5
@@ -27,7 +28,7 @@ module Api::V1
         @purchase = Purchase.new
         @purchase.purchase_number = '000001'
         @purchase.supplier = @supplier
-        @purchase.iva = @iva
+        @purchase.vat = @vat
         @purchase.subtotal = 750
         @purchase.form_of_payment = 'Cash'
         @purchase.purchase_date = Date.new
@@ -71,7 +72,7 @@ module Api::V1
         @purchase.save
       end
 
-      subject { Sale.create(invoice: FactoryGirl.create(:invoice, iva: @iva, client: @client), inventory: @inventory2, pieces: 7, amount: 2, unit: 'kg', unit_price: 150) }
+      subject { Sale.create(invoice: FactoryGirl.create(:invoice, vat: @vat, client: @client), inventory: @inventory2, pieces: 7, amount: 2, unit: 'kg', unit_price: 150) }
 
       it { should validate_presence_of(:invoice) }
       it { should validate_presence_of(:inventory) }
@@ -85,13 +86,13 @@ module Api::V1
       it { should validate_numericality_of(:unit_price) }
 
       it "should have a subtotal equals to the pieces * unit_price" do
-        sale = Sale.create(invoice: FactoryGirl.create(:invoice, iva: @iva, client: @client), inventory: @inventory2, pieces: 7, amount: 2, unit: 'kg', unit_price: 150)
+        sale = Sale.create(invoice: FactoryGirl.create(:invoice, vat: @vat, client: @client), inventory: @inventory2, pieces: 7, amount: 2, unit: 'kg', unit_price: 150)
 
         expect(sale.subtotal).to eq((sale.pieces*sale.unit_price))
       end
 
       it "should remove from existence after created" do
-        sale = Sale.create(invoice: FactoryGirl.create(:invoice, iva: @iva, client: @client), inventory: @inventory2, pieces: 7, amount: 2, unit: 'kg', unit_price: 150)
+        sale = Sale.create(invoice: FactoryGirl.create(:invoice, vat: @vat, client: @client), inventory: @inventory2, pieces: 7, amount: 2, unit: 'kg', unit_price: 150)
         existence = Existence.where(inventory_id: @inventory2.id).first
 
         expect(existence.pieces).to eq(@inventory2.pieces - sale.pieces)
@@ -102,7 +103,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'
@@ -122,7 +123,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'
@@ -142,7 +143,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'

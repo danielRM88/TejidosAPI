@@ -4,14 +4,14 @@
 #
 #  id              :integer          not null, primary key
 #  client_id       :integer          not null
-#  iva_id          :integer          not null
+#  vat             :decimal(6, 2)    not null
 #  invoice_number  :string(50)       not null
 #  subtotal        :decimal(18, 2)   not null
 #  invoice_date    :date             not null
 #  form_of_payment :string(155)      not null
+#  invoice_state   :string(20)       default("CURRENT"), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  invoice_state   :string(20)       default("CURRENT"), not null
 #
 
 require 'rails_helper'
@@ -20,7 +20,8 @@ module Api::V1
     RSpec.describe Invoice, type: :model do
       before(:all) do
         @client = FactoryGirl.create :client
-        @iva = FactoryGirl.create :iva
+        # @vat = FactoryGirl.create :vat
+        @vat = 12
         @fabric = FactoryGirl.create :fabric
         @fabric2 = FactoryGirl.create :fabric2
         @supplier = FactoryGirl.create :supplier
@@ -28,7 +29,7 @@ module Api::V1
         @purchase = Purchase.new
         @purchase.purchase_number = '000001'
         @purchase.supplier = @supplier
-        @purchase.iva = @iva
+        @purchase.vat = 12.5
         @purchase.subtotal = 750
         @purchase.form_of_payment = 'Cash'
         @purchase.purchase_date = Date.new
@@ -72,10 +73,10 @@ module Api::V1
         @purchase.save
       end
 
-      subject { Invoice.new({client: @client, iva: @iva, invoice_number: '000001-a', subtotal: 20.0, invoice_date: Date.new, form_of_payment: "CASH"}) }
+      subject { Invoice.new({client: @client, vat: @vat, invoice_number: '000001-a', subtotal: 20.0, invoice_date: Date.new, form_of_payment: "CASH"}) }
 
       it { should validate_presence_of(:client) }
-      it { should validate_presence_of(:iva) }
+      it { should validate_presence_of(:vat) }
       it { should validate_presence_of(:invoice_number) }
       it { should validate_uniqueness_of(:invoice_number) }
       it { should validate_length_of(:invoice_number).is_at_most(50) }
@@ -91,7 +92,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'
@@ -133,7 +134,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'
@@ -186,7 +187,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'
@@ -235,7 +236,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'
@@ -301,7 +302,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'
@@ -349,7 +350,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'
@@ -397,7 +398,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'
@@ -445,7 +446,7 @@ module Api::V1
         invoice = Invoice.new
         invoice.invoice_number = '0000001'
         invoice.client = @client
-        invoice.iva = @iva
+        invoice.vat = @vat
         invoice.subtotal = 10000
         invoice.invoice_date = Date.new
         invoice.form_of_payment = 'Cash'

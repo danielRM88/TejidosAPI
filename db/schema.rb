@@ -79,7 +79,7 @@ ActiveRecord::Schema.define(version: 20151017233254) do
 
   create_table "invoices", force: :cascade do |t|
     t.integer  "client_id",                                                                null: false
-    t.integer  "iva_id",                                                                   null: false
+    t.decimal  "vat",                         precision: 6,  scale: 2,                     null: false
     t.string   "invoice_number",  limit: 50,                                               null: false
     t.decimal  "subtotal",                    precision: 18, scale: 2,                     null: false
     t.date     "invoice_date",                                                             null: false
@@ -91,15 +91,6 @@ ActiveRecord::Schema.define(version: 20151017233254) do
 
   add_index "invoices", ["client_id"], name: "index_invoices_on_client_id", using: :btree
   add_index "invoices", ["invoice_number"], name: "INVOICES_UNIQUE_NUMBER", unique: true, using: :btree
-  add_index "invoices", ["iva_id"], name: "index_invoices_on_iva_id", using: :btree
-
-  create_table "ivas", force: :cascade do |t|
-    t.decimal  "percentage", precision: 5, scale: 2, null: false
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
-  end
-
-  add_index "ivas", ["percentage"], name: "IVAS_UNIQUE_PERCENTAGE", unique: true, using: :btree
 
   create_table "phones", force: :cascade do |t|
     t.string   "country_code", limit: 5,  null: false
@@ -123,7 +114,7 @@ ActiveRecord::Schema.define(version: 20151017233254) do
 
   create_table "purchases", force: :cascade do |t|
     t.integer  "supplier_id",                                                              null: false
-    t.integer  "iva_id",                                                                   null: false
+    t.decimal  "vat",                         precision: 6,  scale: 2,                     null: false
     t.string   "purchase_number", limit: 50,                                               null: false
     t.decimal  "subtotal",                    precision: 18, scale: 2,                     null: false
     t.string   "form_of_payment", limit: 155,                                              null: false
@@ -133,7 +124,6 @@ ActiveRecord::Schema.define(version: 20151017233254) do
     t.datetime "updated_at",                                                               null: false
   end
 
-  add_index "purchases", ["iva_id"], name: "index_purchases_on_iva_id", using: :btree
   add_index "purchases", ["supplier_id", "purchase_number"], name: "PURCHASES_UNIQUE_NUMBER", unique: true, where: "((purchase_state)::text = 'CURRENT'::text)", using: :btree
   add_index "purchases", ["supplier_id"], name: "index_purchases_on_supplier_id", using: :btree
 
@@ -165,12 +155,12 @@ ActiveRecord::Schema.define(version: 20151017233254) do
   add_index "suppliers", ["type_id", "number_id"], name: "SUPPLIERS_UNIQUE_ID", unique: true, where: "((supplier_state)::text = 'CURRENT'::text)", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "user_name",       limit: 50,              null: false
-    t.string   "user_lastname",   limit: 50,              null: false
-    t.string   "password_digest",                         null: false
-    t.string   "email",                      default: "", null: false
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.string   "user_name",       limit: 50, null: false
+    t.string   "user_lastname",   limit: 50, null: false
+    t.string   "password_digest",            null: false
+    t.string   "email",                      null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
@@ -181,10 +171,8 @@ ActiveRecord::Schema.define(version: 20151017233254) do
   add_foreign_key "inventories", "fabrics", name: "PUR_HAS_FAB_FABRICS_FK"
   add_foreign_key "inventories", "purchases", name: "PUR_HAS_FAB_PURCHASES_FK"
   add_foreign_key "invoices", "clients", name: "INVOICES_CLIENTS_FK"
-  add_foreign_key "invoices", "ivas", name: "INVOICES_IVAS_FK"
   add_foreign_key "phones_suppliers", "phones", name: "SUPPLIERS_PHONES_PHONES_FK"
   add_foreign_key "phones_suppliers", "suppliers", name: "SUPPLIERS_PHONES_SUPPLIERS_FK"
-  add_foreign_key "purchases", "ivas", name: "PURCHASES_IVAS_FK"
   add_foreign_key "purchases", "suppliers", name: "PURCHASES_SUPPLIERS_FK"
   add_foreign_key "sales", "inventories", name: "SALES_INV_FK"
   add_foreign_key "sales", "invoices", name: "SALES_INVOICES_FK"

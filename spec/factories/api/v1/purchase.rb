@@ -17,7 +17,7 @@
 FactoryGirl.define do
   factory :purchase, class: Api::V1::Purchase do
     supplier_id     1
-    iva_id          1
+    vat          12
     purchase_number "01-00001"
     subtotal        250000
     form_of_payment "credit"
@@ -25,7 +25,7 @@ FactoryGirl.define do
   end
   factory :purchase2, class: Api::V1::Purchase do
     supplier_id     2
-    iva_id          1
+    vat          12
     purchase_number "001501"
     subtotal        156090.255
     form_of_payment "check"

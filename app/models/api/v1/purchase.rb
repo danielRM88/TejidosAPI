@@ -4,7 +4,7 @@
 #
 #  id              :integer          not null, primary key
 #  supplier_id     :integer          not null
-#  iva_id          :integer          not null
+#  vat             :decimal(6, 2)    not null
 #  purchase_number :string(50)       not null
 #  subtotal        :decimal(18, 2)   not null
 #  form_of_payment :string(155)      not null
@@ -19,11 +19,12 @@ class Api::V1::Purchase < ActiveRecord::Base
   include Stateful
 
   belongs_to :supplier
-  belongs_to :iva
+  # belongs_to :iva
   has_many :inventories, inverse_of: :purchase
 
   validates :supplier, presence: true
-  validates :iva, presence: true
+  # validates :iva, presence: true
+  validates :vat, presence: true
   validates :purchase_number, presence: true
   validates :purchase_number, length: { maximum: 50 }
   validates :purchase_number, uniqueness: {case_sensitive: false, scope: [:supplier_id, :purchase_state]}, if: :current?
@@ -48,7 +49,7 @@ class Api::V1::Purchase < ActiveRecord::Base
       subtotal += inventory.subtotal
     end
 
-    self[:subtotal] = subtotal
+    self[:subtotal] = subtotal if self[:subtotal].blank?
     return subtotal
   end
 end

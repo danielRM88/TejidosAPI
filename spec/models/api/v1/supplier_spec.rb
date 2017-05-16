@@ -34,7 +34,7 @@ module Api::V1
 
     it "should create new record when updated if it has dependencies" do
       supplier = FactoryGirl.create :supplier2
-      purchase = FactoryGirl.create :purchase, iva: FactoryGirl.create(:iva2), supplier: supplier
+      purchase = FactoryGirl.create :purchase, vat: 12, supplier: supplier
 
       supplier.address = "New Address"
       supplier.save
@@ -52,7 +52,7 @@ module Api::V1
 
     it "should update status when deleted if it has dependencies" do
       supplier = FactoryGirl.create :supplier2
-      purchase = FactoryGirl.create :purchase, iva: FactoryGirl.create(:iva2), supplier: supplier
+      purchase = FactoryGirl.create :purchase, vat: 13, supplier: supplier
 
       supplier.destroy
       expect(supplier.supplier_state).to eq(Stateful::DELETED_STATE)

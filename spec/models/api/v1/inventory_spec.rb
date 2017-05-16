@@ -18,12 +18,21 @@ require 'rails_helper'
 module Api::V1
   RSpec.describe Inventory, type: :model do
     before(:all) do
-      @iva = FactoryGirl.create :iva4
+      # @vat = FactoryGirl.create :vat4
+      @vat = 12
       @fabric = FactoryGirl.create :fabric5
       @supplier = FactoryGirl.create :supplier4
     end
 
-    subject { Inventory.create(purchase: FactoryGirl.create(:purchase, supplier: @supplier, iva: @iva), fabric: @fabric, pieces: 100, amount: 50, unit: 'kg', unit_price: 150) }
+    subject { 
+      purchase = Purchase.new(supplier: @supplier, vat: @vat, purchase_number: "0000001b", subtotal: 10000, form_of_payment: "CASH", purchase_date: Date.new)
+      @inventory = Inventory.new(purchase: purchase, fabric: @fabric, pieces: 10, amount: 5, unit: 'kg', unit_price: 50)
+      # inventory2 = Inventory.create(purchase: purchase, fabric: @fabric2, pieces: 50, amount: 15, unit: 'kg', unit_price: 100)
+      purchase.inventories << @inventory
+      purchase.save
+      # purchase.inventories << inventory2
+      Inventory.create(purchase: purchase, fabric: @fabric, pieces: 100, amount: 50, unit: 'kg', unit_price: 150) 
+    }
 
     it { should validate_presence_of(:purchase) }
     it { should validate_presence_of(:fabric) }
@@ -37,13 +46,23 @@ module Api::V1
     it { should validate_numericality_of(:unit_price) }
 
     it "should have a subtotal equals to the pieces * unit_price" do
-      inventory = Inventory.create(purchase: FactoryGirl.create(:purchase, supplier: @supplier, iva: @iva), fabric: @fabric, pieces: 100, amount: 50, unit: 'kg', unit_price: 150)
+      # inventory = Inventory.create(purchase: FactoryGirl.create(:purchase, supplier: @supplier, vat: @vat), fabric: @fabric, pieces: 100, amount: 50, unit: 'kg', unit_price: 150)
+      purchase = Purchase.new(supplier: @supplier, vat: @vat, purchase_number: "0000001b", subtotal: 10000, form_of_payment: "CASH", purchase_date: Date.new)
+      inventory = Inventory.new(purchase: purchase, fabric: @fabric, pieces: 10, amount: 5, unit: 'kg', unit_price: 50)
+      # inventory2 = Inventory.create(purchase: purchase, fabric: @fabric2, pieces: 50, amount: 15, unit: 'kg', unit_price: 100)
+      purchase.inventories << inventory
+      purchase.save
 
       expect(inventory.subtotal).to eq((inventory.pieces*inventory.unit_price))
     end
 
     it "should insert into existence after created" do
-      inventory = Inventory.create(purchase: FactoryGirl.create(:purchase, supplier: @supplier, iva: @iva), fabric: @fabric, pieces: 100, amount: 50, unit: 'kg', unit_price: 150)
+      purchase = Purchase.new(supplier: @supplier, vat: @vat, purchase_number: "0000001b", subtotal: 10000, form_of_payment: "CASH", purchase_date: Date.new)
+      inventory = Inventory.new(purchase: purchase, fabric: @fabric, pieces: 10, amount: 5, unit: 'kg', unit_price: 50)
+      # inventory2 = Inventory.create(purchase: purchase, fabric: @fabric2, pieces: 50, amount: 15, unit: 'kg', unit_price: 100)
+      purchase.inventories << inventory
+      purchase.save
+      # inventory = Inventory.create(purchase: FactoryGirl.create(:purchase, supplier: @supplier, vat: @vat), fabric: @fabric, pieces: 100, amount: 50, unit: 'kg', unit_price: 150)
       existence = Existence.where(inventory_id: inventory.id).first
 
       expect(existence).not_to be_nil

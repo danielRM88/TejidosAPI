@@ -16,10 +16,16 @@ require 'rails_helper'
 module Api::V1
   RSpec.describe Existence, type: :model do
     before(:all) do
-      @iva = FactoryGirl.create :iva6
+      # @vat = FactoryGirl.create :vat6
       @fabric = FactoryGirl.create :fabric8
       @supplier = FactoryGirl.create :supplier6
-      @inventory = Inventory.create(purchase: FactoryGirl.create(:purchase, supplier: @supplier, iva: @iva), fabric: @fabric, pieces: 100, amount: 50, unit: 'kg', unit_price: 150)
+
+      purchase = Purchase.new(supplier: @supplier, vat: 12, purchase_number: "0000001q", subtotal: 10000, form_of_payment: "CASH", purchase_date: Date.new)
+      @inventory = Inventory.new(purchase: purchase, fabric: @fabric, pieces: 10, amount: 5, unit: 'kg', unit_price: 50)
+      purchase.inventories << @inventory
+      purchase.save
+
+      # @inventory = Inventory.create(purchase: FactoryGirl.create(:purchase, supplier: @supplier, vat: 12), fabric: @fabric, pieces: 100, amount: 50, unit: 'kg', unit_price: 150)
     end
 
     subject { Existence.where(inventory_id: @inventory.id).first }
