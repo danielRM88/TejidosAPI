@@ -1,14 +1,14 @@
 module Api::V1
   class PurchasesController < ApplicationController
     before_action :set_purchase, only: [:show, :update, :destroy]
-    # before_action :authenticate_request!
+    before_action :authenticate_request!
 
     # GET /purchases
     # GET /purchases.json
     def index
-      @purchases = Purchase.all
+      @purchases = Purchase.all.paginate(:page => params[:page], per_page: 10)
 
-      render json: @purchases
+      render json: {purchases: @purchases, total_pages: @purchases.total_pages, current_page: @purchases.current_page}
     end
 
     # GET /purchases/1
