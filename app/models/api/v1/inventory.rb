@@ -34,4 +34,18 @@ class Api::V1::Inventory < ActiveRecord::Base
     return 0 if (self.amount.blank? || self.unit_price.blank?)
     return (self.amount*self.unit_price)
   end
+
+  def as_json(options = { })
+    json = super(options)
+    json[:fabric_data] = fabric_data
+    json
+  end
+
+  def fabric_data
+    return {
+      fabric_id: self.fabric.id,
+      fabric_code: self.fabric.code,
+      fabric_unit_price: self.fabric.unit_price
+    }
+  end
 end

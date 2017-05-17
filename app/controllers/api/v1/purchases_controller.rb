@@ -1,7 +1,7 @@
 module Api::V1
   class PurchasesController < ApplicationController
     before_action :set_purchase, only: [:show, :update, :destroy]
-    before_action :authenticate_request!
+    # before_action :authenticate_request!
 
     # GET /purchases
     # GET /purchases.json
@@ -14,7 +14,8 @@ module Api::V1
     # GET /purchases/1
     # GET /purchases/1.json
     def show
-      render json: @purchase
+      puts @purchase.inspect
+      render json: @purchase, methods: [:inventories]
     end
 
     # POST /purchases
@@ -33,9 +34,17 @@ module Api::V1
     # PATCH/PUT /purchases/1
     # PATCH/PUT /purchases/1.json
     def update
+      # byebug
       @purchase = Purchase.find(params[:id])
 
-      if @purchase.update(purchase_params)
+      success = false
+      ActiveRecord::Base.transaction do
+        @purchase.destroy!
+        @purchase = Purchase.new(purchase_params)
+        success = @purchase.save!
+      end
+
+      if success
         head :no_content
       else
         render json: @purchase.errors, status: :unprocessable_entity

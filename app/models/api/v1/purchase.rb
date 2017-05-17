@@ -52,4 +52,18 @@ class Api::V1::Purchase < ActiveRecord::Base
     self[:subtotal] = subtotal if self[:subtotal].blank?
     return subtotal
   end
+
+  def as_json(options = { })
+    json = super(options)
+    json[:supplier_data] = supplier_data
+    json
+  end
+
+  def supplier_data
+    return {
+      supplier_type_id: self.supplier.type_id, 
+      supplier_number_id: self.supplier.number_id, 
+      supplier_name: self.supplier.supplier_name
+    }
+  end
 end
