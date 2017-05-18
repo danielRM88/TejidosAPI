@@ -20,6 +20,8 @@ class Api::V1::Client < ActiveRecord::Base
   has_many :invoices
   has_and_belongs_to_many :phones
 
+  scope :current, -> { where(client_state: Stateful::CURRENT_STATE) }
+
   validates :client_name, presence: true
   validates :client_name, length: { maximum: 50 }
   validates :type_id, presence: true

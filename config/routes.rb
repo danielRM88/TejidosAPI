@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       resources :ivas, except: [:new, :edit]
       # resources :sales, except: [:new, :edit]
       resources :clients, except: [:new, :edit]
+      resources :stocks, only: [:index]
       # mount Knock::Engine => "/knock"
       post 'auth_user' => 'user_tokens#create'
     end

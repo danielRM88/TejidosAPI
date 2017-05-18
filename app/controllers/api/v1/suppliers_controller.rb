@@ -8,7 +8,7 @@ module Api::V1
     def index
       type_id = params[:type_id]
       number_id = params[:number_id]
-      @suppliers = Supplier.all.paginate(:page => params[:page], per_page: 10)
+      @suppliers = Supplier.current.paginate(:page => params[:page], per_page: 10)
 
       if !type_id.blank? && !number_id.blank?
         @suppliers = @suppliers.with_similar_type_and_number_id type_id, number_id

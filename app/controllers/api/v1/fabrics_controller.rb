@@ -8,7 +8,7 @@ module Api::V1
     def index
       code = params[:code]
 
-      @fabrics = Fabric.all.paginate(:page => params[:page], per_page: 10)
+      @fabrics = Fabric.current.paginate(:page => params[:page], per_page: 10)
       
       if !code.blank?
         @fabrics = @fabrics.with_similar_code code

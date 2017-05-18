@@ -17,7 +17,8 @@ class Api::V1::Existence < ActiveRecord::Base
   class NotEnoughExistence < StandardError; end
 
   scope :less_amount_and_pieces_with_fabric_id, -> (fabric_id, unit) { joins(:inventory).where(inventories: {fabric_id: fabric_id}).where(unit: unit).order(created_at: :asc).order(amount: :asc).order(pieces: :asc) }
-  scope :amount_and_pieces_for_fabric_id, -> (fabric_id, unit) { select(' "inventories"."fabric_id", SUM("existences"."amount") AS amount, SUM("existences"."pieces") pieces ').joins(:inventory).where(inventories: {fabric_id: fabric_id}).where(unit: unit).group(:fabric_id) }
+  scope :amount_and_pieces_for_fabric_id, -> (fabric_id, unit) { select(' "fabrics"."code" AS fabric_code, SUM("existences"."amount") AS amount, SUM("existences"."pieces") pieces ').joins(:inventory).joins('INNER JOIN "fabrics" ON "fabrics"."id" = "inventories"."fabric_id"').where(inventories: {fabric_id: fabric_id}).where(unit: unit).group('"fabrics"."code"') }
+  scope :amount_and_pieces_by_fabric_id, -> { select(' "existences"."unit" AS unit, "fabrics"."code" AS fabric_code, SUM("existences"."amount") AS amount, SUM("existences"."pieces") pieces ').joins(:inventory).joins('INNER JOIN "fabrics" ON "fabrics"."id" = "inventories"."fabric_id"').group('"fabrics"."code"').group('"existences"."unit"') }
 
   validates :inventory, presence: true
   validates :pieces, presence: true

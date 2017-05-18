@@ -6,7 +6,7 @@ module Api::V1
     # GET /clients
     # GET /clients.json
     def index
-      @clients = Client.all.paginate(:page => params[:page], per_page: 10)
+      @clients = Client.current.paginate(:page => params[:page], per_page: 10)
 
       render json: { clients: @clients, total_pages: @clients.total_pages, current_page: @clients.current_page }
     end
