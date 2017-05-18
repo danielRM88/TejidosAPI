@@ -14,7 +14,7 @@
 #
 
 class Api::V1::Sale < ActiveRecord::Base
-  belongs_to :invoice
+  belongs_to :invoice, inverse_of: :sales
   belongs_to :inventory
 
   validates :invoice, presence: true
@@ -30,5 +30,15 @@ class Api::V1::Sale < ActiveRecord::Base
 
   def subtotal
     return (self.unit_price*self.amount)
+  end
+
+  def as_json(options = { })
+    json = super(options)
+    json[:fabric_data] = fabric_data
+    json
+  end
+
+  def fabric_data
+    return self.inventory.fabric_data
   end
 end

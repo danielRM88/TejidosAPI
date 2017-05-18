@@ -6,7 +6,7 @@ module Api::V1
     # GET /purchases
     # GET /purchases.json
     def index
-      @purchases = Purchase.all.paginate(:page => params[:page], per_page: 10)
+      @purchases = Purchase.all.order(purchase_date: :desc).order(created_at: :desc).paginate(:page => params[:page], per_page: 10)
 
       render json: {purchases: @purchases, total_pages: @purchases.total_pages, current_page: @purchases.current_page}
     end
