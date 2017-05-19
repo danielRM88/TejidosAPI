@@ -97,6 +97,7 @@ class Api::V1::Invoice < ActiveRecord::Base
 
   def self.next_invoice_number
     max = self.max_invoice_number
+    max = 0 if max.blank?
     return max.to_i + 1
   end
 
