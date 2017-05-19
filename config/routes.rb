@@ -2,7 +2,9 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :invoices, except: [:new, :edit]
+      resources :invoices, except: [:new, :edit] do
+        get :get_next_invoice_number, on: :collection
+      end
       resources :users, except: [:new, :edit]
       # resources :existences, except: [:new, :edit]
       # resources :inventories, except: [:new, :edit]

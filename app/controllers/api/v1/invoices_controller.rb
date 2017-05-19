@@ -1,7 +1,7 @@
 module Api::V1
   class InvoicesController < ApplicationController
     before_action :set_invoice, only: [:show, :update, :destroy]
-    before_action :authenticate_request!
+    # before_action :authenticate_request!
 
     # GET /invoices
     # GET /invoices.json
@@ -23,7 +23,7 @@ module Api::V1
       @invoice = Invoice.new(invoice_params)
       sales = params[:invoice][:sales_attributes]
       success = false
-      # byebug
+      
       begin
         @invoice.pick_sales sales
         success = @invoice.save
@@ -74,6 +74,10 @@ module Api::V1
       @invoice.destroy
 
       head :no_content
+    end
+
+    def get_next_invoice_number
+      render json: { invoice_number: Invoice.next_invoice_number }
     end
 
     private

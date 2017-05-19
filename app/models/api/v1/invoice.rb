@@ -21,6 +21,8 @@ class Api::V1::Invoice < ActiveRecord::Base
   # belongs_to :iva
   has_many :sales, inverse_of: :invoice
 
+  scope :max_invoice_number, -> { maximum(:invoice_number) }
+
   validates :client, presence: true
   # validates :iva, presence: true
   validates :vat, presence: true
@@ -51,14 +53,15 @@ class Api::V1::Invoice < ActiveRecord::Base
   def pick_sales sales_hash
     sales_hash.each do |sale|
       fabric_id = sale["fabric_id"]
+      fabric_code = sale["fabric_code"]
       amount_needed = sale["amount"].to_f
       pieces_needed = sale["pieces"].to_i
       unit = sale["unit"]
       unit_price = sale["unit_price"]
 
-      Api::V1::Existence.enough_existence fabric_id, amount_needed, pieces_needed, unit
+      Api::V1::Existence.enough_existence fabric_code, amount_needed, pieces_needed, unit
 
-      existences = Api::V1::Existence.less_amount_and_pieces_with_fabric_id(fabric_id, unit)
+      existences = Api::V1::Existence.less_amount_and_pieces_with_fabric_code(fabric_code, unit)
       sale = nil
       sale_amount = 0
       sale_pieces = 0
@@ -90,6 +93,11 @@ class Api::V1::Invoice < ActiveRecord::Base
       client_number_id: self.client.number_id, 
       client_name: self.client.client_name
     }
+  end
+
+  def self.next_invoice_number
+    max = self.max_invoice_number
+    return max.to_i + 1
   end
 
 end
