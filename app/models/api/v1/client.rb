@@ -18,7 +18,7 @@ class Api::V1::Client < ActiveRecord::Base
   include StateManager
 
   has_many :invoices
-  has_and_belongs_to_many :phones
+  has_and_belongs_to_many :phones, inverse_of: :clients
 
   scope :current, -> { where(client_state: Stateful::CURRENT_STATE) }
 
@@ -36,6 +36,8 @@ class Api::V1::Client < ActiveRecord::Base
   validates :client_state, length: { maximum: 20 }
   validates :client_state, inclusion: { in: STATES, message: "%{value} is not a valid client_state" }
 
+  accepts_nested_attributes_for :phones
+
   def get_state
     self.client_state
   end
@@ -50,5 +52,25 @@ class Api::V1::Client < ActiveRecord::Base
 
   def count_dependencies
     self.invoices.count
+  end
+
+  def as_json(options = { })
+    json = super(options)
+    json[:phone] = phone_data
+    json
+  end
+
+  def phone_data
+    phone = self.phones.first
+    hash = {}
+    if !phone.blank?
+      hash = {
+        country_code: phone.country_code,
+        area_code: phone.area_code,
+        phone_number: phone.phone_number
+      }
+    end
+
+    return hash
   end
 end

@@ -1,7 +1,7 @@
 module Api::V1
   class ClientsController < ApplicationController
     before_action :set_client, only: [:show, :update, :destroy]
-    before_action :authenticate_request!
+    # before_action :authenticate_request!
     
     # GET /clients
     # GET /clients.json
@@ -34,7 +34,18 @@ module Api::V1
     def update
       @client = Client.find(params[:id])
 
-      if @client.update(client_params)
+      success = false
+      begin
+        ActiveRecord::Base.transaction do
+          @client.phones.each { |p| p.destroy }
+          @client.update(client_params)
+          success = @client.save!
+        end
+      rescue ActiveRecord::RecordInvalid => ex
+        puts ex
+      end
+
+      if success
         head :no_content
       else
         render json: {errors: @client.errors}, status: :unprocessable_entity
@@ -56,7 +67,7 @@ module Api::V1
       end
 
       def client_params
-        params.require(:client).permit(:client_name, :type_id, :number_id, :address, :email)
+        params.require(:client).permit(:client_name, :type_id, :number_id, :address, :email, :phones_attributes => [:area_code, :phone_number, :country_code])
       end
   end
 end
