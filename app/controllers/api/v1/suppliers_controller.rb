@@ -31,7 +31,7 @@ module Api::V1
       if @supplier.save
         render json: @supplier, status: :created, location: @supplier
       else
-        render json: @supplier.errors, status: :unprocessable_entity
+        render json: {errors: @supplier.errors}, status: :unprocessable_entity
       end
     end
 
@@ -43,7 +43,7 @@ module Api::V1
       if @supplier.update(supplier_params)
         head :no_content
       else
-        render json: @supplier.errors, status: :unprocessable_entity
+        render json: {errors: @supplier.errors}, status: :unprocessable_entity
       end
     end
 

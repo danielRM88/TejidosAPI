@@ -14,7 +14,6 @@ module Api::V1
     # GET /purchases/1
     # GET /purchases/1.json
     def show
-      puts @purchase.inspect
       render json: @purchase, methods: [:inventories]
     end
 
@@ -26,8 +25,7 @@ module Api::V1
       if @purchase.save
         render json: @purchase, status: :created, location: @purchase
       else
-        puts @purchase.errors.inspect
-        render json: @purchase.errors, status: :unprocessable_entity
+        render json: {errors: @purchase.errors}, status: :unprocessable_entity
       end
     end
 
@@ -47,7 +45,7 @@ module Api::V1
       if success
         head :no_content
       else
-        render json: @purchase.errors, status: :unprocessable_entity
+        render json: {errors: @purchase.errors}, status: :unprocessable_entity
       end
     end
 

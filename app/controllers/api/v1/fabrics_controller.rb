@@ -31,7 +31,7 @@ module Api::V1
       if @fabric.save
         render json: @fabric, status: :created, location: @fabric
       else
-        render json: @fabric.errors, status: :unprocessable_entity
+        render json: {errors: @fabric.errors}, status: :unprocessable_entity
       end
     end
 
@@ -43,7 +43,7 @@ module Api::V1
       if @fabric.update(fabric_params)
         head :no_content
       else
-        render json: @fabric.errors, status: :unprocessable_entity
+        render json: {errors: @fabric.errors}, status: :unprocessable_entity
       end
     end
 

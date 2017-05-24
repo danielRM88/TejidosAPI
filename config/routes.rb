@@ -5,14 +5,14 @@ Rails.application.routes.draw do
       resources :invoices, except: [:new, :edit] do
         get :get_next_invoice_number, on: :collection
       end
-      resources :users, except: [:new, :edit]
+      # resources :users, except: [:new, :edit]
       # resources :existences, except: [:new, :edit]
       # resources :inventories, except: [:new, :edit]
       resources :fabrics, except: [:new, :edit]
       resources :suppliers, except: [:new, :edit]
       resources :phones, except: [:new, :edit]
       resources :purchases, except: [:new, :edit]
-      resources :ivas, except: [:new, :edit]
+      # resources :ivas, except: [:new, :edit]
       # resources :sales, except: [:new, :edit]
       resources :clients, except: [:new, :edit]
       resources :stocks, only: [:index]

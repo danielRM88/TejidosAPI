@@ -37,7 +37,7 @@ module Api::V1
       if success
         render json: @invoice, status: :created, location: @invoice
       else
-        render json: @invoice.errors, status: :unprocessable_entity
+        render json: {errors: @invoice.errors}, status: :unprocessable_entity
       end
     end
 
@@ -47,24 +47,25 @@ module Api::V1
       @invoice = Invoice.find(params[:id])
 
       success = false
-      ActiveRecord::Base.transaction do
-        @invoice.destroy!
-        @invoice = Invoice.new(invoice_params)
-        sales = params[:invoice][:sales_attributes]
-        success = false
-        begin
+      begin
+        ActiveRecord::Base.transaction do
+          @invoice.destroy!
+          @invoice = Invoice.new(invoice_params)
+          sales = params[:invoice][:sales_attributes]
+          success = false
           @invoice.pick_sales sales
           success = @invoice.save!
-        rescue Existence::NotEnoughExistence => ex
-          @invoice.errors.add :sales, "Not Enough Existence"
-          raise ex
         end
+      rescue ActiveRecord::RecordInvalid => ex
+        puts ex
+      rescue Existence::NotEnoughExistence => ex
+        @invoice.errors.add :sales, "Not Enough Existence"
       end
 
       if success
         head :no_content
       else
-        render json: @invoice.errors, status: :unprocessable_entity
+        render json: {errors: @invoice.errors}, status: :unprocessable_entity
       end
     end
 

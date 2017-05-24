@@ -25,7 +25,7 @@ module Api::V1
       if @client.save
         render json: @client, status: :created, location: @client
       else
-        render json: @client.errors, status: :unprocessable_entity
+        render json: {errors: @client.errors}, status: :unprocessable_entity
       end
     end
 
@@ -37,7 +37,7 @@ module Api::V1
       if @client.update(client_params)
         head :no_content
       else
-        render json: @client.errors, status: :unprocessable_entity
+        render json: {errors: @client.errors}, status: :unprocessable_entity
       end
     end
 
