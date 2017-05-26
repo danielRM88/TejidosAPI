@@ -28,3 +28,5 @@ gem 'annotate', '2.6.10'
 gem 'bcrypt-ruby', '~> 3.1.2'
 
 gem 'will_paginate', '~> 3.1.0'
+
+gem 'puma', '~> 3.8.2'

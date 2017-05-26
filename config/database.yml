@@ -24,6 +24,10 @@ test: &test
   host: localhost
   port: 5432
 
-# production:
-#   <<: *default
-#   database: db/production.sqlite3
+production:
+  <<: *default
+  host: <%= ENV['TEJIDOS_DATABASE_HOST'] %>
+  database: tejidos_production
+  pool: 5
+  username: <%= ENV['TEJIDOS_DATABASE_USER'] %>
+  password: <%= ENV['TEJIDOS_DATABASE_PASSWORD'] %>
