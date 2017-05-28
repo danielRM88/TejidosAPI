@@ -6,6 +6,7 @@ class JsonWebToken
     Rails.logger.info "payload: "+payload.to_s
     payload.reverse_merge!(meta)
     Rails.logger.info "secret: "+Rails.application.secrets.secret_key_base.to_s
+    Rails.logger.info "secret_key_base: "+ENV["SECRET_KEY_BASE"].to_s
     JWT.encode(payload, Rails.application.secrets.secret_key_base)
   end
 
