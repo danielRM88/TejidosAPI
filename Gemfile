@@ -15,11 +15,12 @@ group :development, :test do
   gem 'factory_girl_rails', '4.0'
   gem 'database_cleaner', '1.5.0'
   gem 'shoulda-matchers', '~> 3.1'
-  gem 'capistrano',         require: false
-  gem 'capistrano-rvm',     require: false
-  gem 'capistrano-rails',   require: false
-  gem 'capistrano-bundler', require: false
-  gem 'capistrano3-puma',   require: false
+  gem 'capistrano', '~> 3.4.0'
+  gem 'capistrano-secrets-yml', '~> 1.0.0'
+  gem 'capistrano-rvm', '~> 0.1.2'
+  gem 'capistrano-rails', '~> 1.1.5'
+  gem 'capistrano-bundler', '~> 1.2.0'
+  gem 'capistrano3-puma', '~> 1.2.1'
 end
 
 gem 'devise', '3.5.2'
