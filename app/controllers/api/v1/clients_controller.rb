@@ -1,7 +1,7 @@
 module Api::V1
   class ClientsController < ApplicationController
     before_action :set_client, only: [:show, :update, :destroy]
-    # before_action :authenticate_request!
+    before_action :authenticate_request!
     
     # GET /clients
     # GET /clients.json
