@@ -26,9 +26,4 @@ test: &test
 
 production:
   <<: *default
-  host: <%= ENV['TEJIDOS_DATABASE_HOST'] %>
   database: tejidos
-  port: <%= ENV['TEJIDOS_DATABASE_PORT'] %>
-  pool: 5
-  username: <%= ENV['TEJIDOS_DATABASE_USER'] %>
-  password: <%= ENV['TEJIDOS_DATABASE_PASSWORD'] %>

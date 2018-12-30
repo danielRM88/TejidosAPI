@@ -36,3 +36,5 @@ gem 'bcrypt-ruby', '~> 3.1.2'
 gem 'will_paginate', '~> 3.1.0'
 
 gem 'puma', '~> 3.8.2'
+
+gem 'rails_12factor', group: :production
